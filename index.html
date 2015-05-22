@@ -1,6 +1,7 @@
 <!doctype>
 <html>
   <head>
+    <title>💥</title>
     <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
     <style type="text/css">
     body {
@@ -10,9 +11,6 @@
     div, span {
       box-sizing: border-box;
     }
-    .bomb {
-      color: red;
-    }
     .cell {
       width: 25px;
       height: 25px;
@@ -21,10 +19,12 @@
       position: relative;
       padding: 2px 3px;
       vertical-align: middle;
+      cursor: default;
     }
 
     .cell.masked {
       font-size: 0;
+      cursor: pointer;
     }
     .cell.masked:before {
       content: "◻️";
@@ -40,61 +40,85 @@
   <body>
     <div class="map"></div>
     <script>
-      var x = 10
-      var y = 10
-      var bomb_n = 10
-      var cell_n = x*y
-      var rate = bomb_n/cell_n
-      var numbermoji = ["🌱", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+      var Game = function (x, y, bomb_n){
+        this.cell_n = x*y
+        if (this.cell_n > 500) { alert("too big, go away"); return false }
+        this.map = $(".map").html("")
+        this.x = x
+        this.y = y
+        this.rate = bomb_n/this.cell_n
+        this.numbermoji = ["🌱", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
 
-      shuffle(bomb_arr(rate)).forEach(function(a, i) {
-        var x_cord = Math.floor((i+1)%x) || 10
-        var y_cord = Math.ceil((i+1)/y)
-        $(".map").append(mine(a).addClass("x"+ x_cord + " y" + y_cord))
-        if (x_cord === x) $(".map").append("<br>")
-      })
-
-      $.fn.neightbors = function() {
-        var arr = []
-        var x_p = this.context.className.match(/x(\d+)/)[1]
-        var y_p = this.context.className.match(/y(\d+)/)[1]
-        arr.push($(".x" + x_p + ".y" + (Number(y_p) + 1)))
-        arr.push($(".x" + x_p + ".y" + (Number(y_p) - 1)))
-        arr.push($(".x" + (Number(x_p) + 1) + ".y" + y_p))
-        arr.push($(".x" + (Number(x_p) - 1) + ".y" + y_p))
-        arr.push($(".x" + (Number(x_p) + 1) + ".y" + (Number(y_p) - 1)))
-        arr.push($(".x" + (Number(x_p) + 1) + ".y" + (Number(y_p) + 1)))
-        arr.push($(".x" + (Number(x_p) - 1) + ".y" + (Number(y_p) - 1)))
-        arr.push($(".x" + (Number(x_p) - 1) + ".y" + (Number(y_p) + 1)))
-        return arr
+        this.init()
       }
 
-      var cells = $(".cell")
-      cells.each(function(i, o) {
-        if(!$(o).hasClass("bomb")) {
+      Game.prototype.init = function () {
+        var that = this
+        this.bomb_arr().forEach(function(a, i) {
+          var x_cord = Math.floor((i+1)%that.x) || that.x
+          var y_cord = Math.ceil((i+1)/that.x)
+          that.map.append(that.mine(a).addClass("x"+ x_cord + " y" + y_cord))
+          if (x_cord === that.x) that.map.append("<br>")
+        })
+
+        $(".cell:not(.bomb)").each(function(i, o) {
           var count = 0
-          $(o).neightbors().forEach(function(n) {
-            if(n.hasClass("bomb")) count ++
+          that.getNeightbors(o).forEach(function(n) {
+            if ($(n).hasClass("bomb")) count ++
           })
           if (count === 0) $(o).addClass("space")
-          o.innerText = numbermoji[count]
-        }
-      })
+          o.innerText = that.numbermoji[count]
+        })
 
-      $(document).on("click", ".cell", function() {
-        $(this).removeClass("masked")
-        if(this.classList.contains("bomb")) {
-          $(".cell").removeClass("masked")
-        } else if ($(this).hasClass("space")) {
-          $(this).neightbors().forEach(function(n) {
-            if($(n).is(".masked:not(.bomb)")) {
-              $(n).removeClass("masked").click()
-            }
-          })
-        }
-      })
+        this.bindEvents()
+      }
 
-      function mine (number) {
+      Game.prototype.getNeightbors = function(obj) {
+        var arr = []
+        var x_p = obj.className.match(/x(\d+)/)[1]
+        var y_p = obj.className.match(/y(\d+)/)[1]
+        arr.push($(".masked.x" + x_p + ".y" + (Number(y_p) + 1))[0])
+        arr.push($(".masked.x" + x_p + ".y" + (Number(y_p) - 1))[0])
+        arr.push($(".masked.x" + (Number(x_p) + 1) + ".y" + y_p)[0])
+        arr.push($(".masked.x" + (Number(x_p) - 1) + ".y" + y_p)[0])
+        arr.push($(".masked.x" + (Number(x_p) + 1) + ".y" + (Number(y_p) - 1))[0])
+        arr.push($(".masked.x" + (Number(x_p) + 1) + ".y" + (Number(y_p) + 1))[0])
+        arr.push($(".masked.x" + (Number(x_p) - 1) + ".y" + (Number(y_p) - 1))[0])
+        arr.push($(".masked.x" + (Number(x_p) - 1) + ".y" + (Number(y_p) + 1))[0])
+        return arr.filter(function(e){return e})
+      }
+
+      Game.prototype.bindEvents = function () {
+        window.classes = []
+        var that = this
+        $(".cell").on("click", function() {
+          $(this).removeClass("masked")
+          if (this.classList.contains("bomb")) {
+            $(".cell").removeClass("masked")
+            that.game()
+
+          } else if ($(this).hasClass("space")) {
+            var neightbors = that.getNeightbors(this)
+            neightbors.forEach(function(n) { $(n).removeClass("masked") })
+            neightbors.forEach(function(n) { $(n).click() })
+          }
+
+          that.game()
+        })
+      }
+
+      Game.prototype.game = function () {
+        if (this.result) return false
+        if ($(".bomb:not(.masked)").length > 0) {
+          this.result = "lost"
+          alert("you lost")
+        } else if ($(".masked").length === $(".bomb").length) {
+          this.result = "won"
+          alert("you won")
+        }
+      }
+
+      Game.prototype.mine = function (number) {
         var base = $("<span class='cell masked'>")
         if (number > 0) {
           base.addClass("bomb").text("💥")
@@ -102,29 +126,30 @@
         return base
       }
 
-      function bomb_arr (chance) {
-        var chance = chance * cell_n
+      Game.prototype.bomb_arr = function () {
+        var chance = this.rate * this.cell_n
         var arr = []
         for(var i=0; i < chance; i++) {
           arr.push(true)
         }
-        for(var n=0; n < (cell_n - chance); n++) {
+        for(var n=0; n < (this.cell_n - chance); n++) {
           arr.push(false)
         }
-        return arr
+        return this.shuffle(arr)
       }
 
-      function shuffle(array) {
-        var currentIndex = array.length, temporaryValue, randomIndex ;
+      Game.prototype.shuffle = function (array) {
+        var currentIndex = array.length, temporaryValue, randomIndex
         while (0 !== currentIndex) {
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex -= 1;
-          temporaryValue = array[currentIndex];
-          array[currentIndex] = array[randomIndex];
-          array[randomIndex] = temporaryValue;
+          randomIndex = Math.floor(Math.random() * currentIndex)
+          currentIndex -= 1
+          temporaryValue = array[currentIndex]
+          array[currentIndex] = array[randomIndex]
+          array[randomIndex] = temporaryValue
         }
-        return array;
+        return array
       }
+      new Game(10, 10, 10)
     </script>
   </body>
 </html>
