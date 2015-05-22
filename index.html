@@ -36,14 +36,6 @@
       font-size: 15px;
     }
 
-    .cell.masked:before {
-      content: "◻️";
-    }
-
-    .masked.flagged:before {
-      content: "🚩";
-    }
-
     .map {
       display: inline-block;
       border: 5px solid #eee;
@@ -55,14 +47,15 @@
   <body>
     <div class="map"></div>
     <script>
-      var Game = function (x, y, bomb_n){
+      var Game = function (x, y, bomb_n, emojiset){
         this.cell_n = x*y
         if (this.cell_n > 500) { alert("too big, go away"); return false }
+        this.emojiset = emojiset
         this.map = $(".map").html("")
         this.x = x
         this.y = y
         this.rate = bomb_n/this.cell_n
-        this.numbermoji = ["🌱", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
+        this.numbermoji = [this.emojiset[0], "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣"]
 
         this.init()
       }
@@ -86,6 +79,7 @@
         })
 
         this.bindEvents()
+        this.customizeEmoji()
       }
 
       Game.prototype.getNeightbors = function(obj) {
@@ -141,7 +135,7 @@
       Game.prototype.mine = function (number) {
         var base = $("<span class='cell masked'>")
         if (number > 0) {
-          base.addClass("bomb").text("💥")
+          base.addClass("bomb").text(this.emojiset[1])
         }
         return base
       }
@@ -158,6 +152,13 @@
         return this.shuffle(arr)
       }
 
+      Game.prototype.customizeEmoji = function () {
+        this.map.find("style").remove()
+        var style = $("<style scoped>")
+        style.append(".cell.masked:before { content: '" + this.emojiset[3] + "'; } .masked.flagged:before { content: '" + this.emojiset[2] + "'; }")
+        this.map.append(style)
+      }
+
       Game.prototype.shuffle = function (array) {
         var currentIndex = array.length, temporaryValue, randomIndex
         while (0 !== currentIndex) {
@@ -169,10 +170,10 @@
         }
         return array
       }
-      new Game(10, 10, 10)
-      console.log("GET AWAY FROM THE CONSOLE!")
-      console.log("GET AWAY FROM THE CONSOLE!")
-      console.log("GET AWAY FROM THE CONSOLE!")
+      new Game(10, 10, 10, ["🌱", "💥", "🚩", "◻️"])
+      console.log("Use: `new Game(cols, rows, bombs, [emptyemoji, bombemoji, flagemoji, starteremoji])` to start a new game with customizations.")
+      console.log(' Eg: `new Game(10, 10, 10, ["", "", "", "◻️"])`')
+      console.log(' Or: `new Game(16, 16, 30, ["🐱", "📛", "💣", "🔍"])`')
     </script>
   </body>
 </html>
