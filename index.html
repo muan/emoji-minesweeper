@@ -12,6 +12,7 @@
     div, span {
       box-sizing: border-box;
     }
+
     .cell {
       width: 25px;
       height: 25px;
@@ -22,13 +23,23 @@
       cursor: default;
     }
 
-    .cell.masked {
+    .cell.masked,
+    .masked.flagged {
       font-size: 0;
       cursor: pointer;
     }
+
+    .masked.flagged:before,
+    .cell.masked:before {
+      font-size: 15px;
+    }
+
     .cell.masked:before {
       content: "◻️";
-      font-size: 15px;
+    }
+
+    .masked.flagged:before {
+      content: "🚩";
     }
 
     .map {
@@ -106,6 +117,11 @@
           }
 
           that.game()
+        })
+
+        $(".cell").on("contextmenu", function() {
+          $(this).addClass("flagged")
+          return false
         })
       }
 
