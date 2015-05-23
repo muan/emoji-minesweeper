@@ -8,17 +8,20 @@
 
 ```javascript
 // to start a new game
-new Game(cols, rows, bombs, [emptyemoji, bombemoji, flagemoji, starteremoji])
+new Game(cols, rows, bombs, [emptyemoji, bombemoji, flagemoji, starteremoji], twemojiOrNot)
 
 // for example:
-new Game(10, 10, 10, ["🌱", "💥", "🚩", "◻️"])
-new Game(16, 16, 30, ["🐱", "📛", "💣", "🔍"])
+new Game(10, 10, 10, ["🌱", "💥", "🚩", "◻️"], true)
+new Game(16, 16, 30, ["🐱", "📛", "💣", "🔍"], false)
 ```
 
 ### todos
 
 - levels
-- customize emoji (except the numbers)
 - time?
 - count clicks
-- make it not cheatable maybe but who cares
+- better win/lose than alerts lol
+
+### :zap:
+
+:heart: https://github.com/twitter/twemoji
