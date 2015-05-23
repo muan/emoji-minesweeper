@@ -86,7 +86,7 @@ Game.prototype.game = function () {
     Array.prototype.forEach.call(masked, function(cell) { cell.reveal(); cell.classList.add("unmasked") })
     this.result = "lost"
     alert("you lost")
-  } else if (document.getElementsByClassName("masked").length === this.bomb_n) {
+  } else if (masked.length === this.bomb_n) {
     Array.prototype.forEach.call(masked, function(cell) { cell.reveal(); cell.classList.add("unmasked") })
     this.result = "won"
     alert("you won")
