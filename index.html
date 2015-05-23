@@ -15,10 +15,40 @@
         font-family: AppleColorEmoji;
         font-size: 15px;
         text-align: center;
+        padding: 20px;
       }
 
-      div, span {
+      span {
         box-sizing: border-box;
+      }
+
+      .btn {
+        background: #f0f0f0;
+        padding: 12px 15px;
+        margin: 0 10px;
+        font-size: 0.65em;
+        border-radius: 3px;
+        text-decoration: none;
+        font-family: helvetica, sans-serif;
+        text-transform: uppercase;;
+        letter-spacing: 1px;
+        color: #666;
+        font-weight: bold;
+        display: inline-block;
+      }
+
+      code {
+        display: none;
+        margin-top: 10px;
+        text-transform: none;
+        background-color: #fff;
+        padding: 2px 4px;
+        max-width: 400px;
+        text-align: left;
+      }
+
+      .customize:hover code {
+        display: block;
       }
 
       .emoji {
@@ -41,6 +71,7 @@
 
       #map {
         display: inline-block;
+        padding: 5px;
         border: 5px solid #eee;
         border-radius: 3px;
         margin: 30px 0;
@@ -48,9 +79,25 @@
     </style>
   </head>
   <body>
+    <a href="#" id="js-emoji" class="btn">Restart (native emoji)</a>
+    <a href="#" id="js-twemoji" class="btn">Restart (twemoji)</a>
+    <br>
     <div id="map"></div>
     <script>
-      new Game(10, 10, 10, ["🐣", "💀", "🚧", "◻️"], true)
+      new Game(10, 10, 10, ["🐣", "💣", "🚧", "◻️"], true)
+
+      document.getElementById("js-emoji").addEventListener("click", function() {
+        new Game(10, 10, 10, ["🐣", "💣", "🚧", "◻️"], false)
+      })
+
+      document.getElementById("js-twemoji").addEventListener("click", function() {
+        new Game(10, 10, 10, ["🐣", "💣", "🚧", "◻️"], true)
+      })
     </script>
+    <br>
+    <span class="btn customize">
+      CUSTOMIZE
+      <code>new Game(cols, rows, bombs, [emptyemoji, bombemoji, flagemoji, starteremoji], twemojiOrNot)</code>
+    </a>
   </body>
 </html>
