@@ -45,7 +45,6 @@ Game.prototype.init = function () {
 }
 
 Game.prototype.bindEvents = function () {
-  window.classes = []
   var that = this
   var cells = document.getElementsByClassName("cell")
   Array.prototype.forEach.call(cells, function (target){
@@ -54,7 +53,7 @@ Game.prototype.bindEvents = function () {
       target.classList.remove("masked")
       if (target.classList.contains("space")) {
         var neightbors = Array.prototype.filter.call(document.querySelectorAll(target.neightbors), function (neightbor) { return neightbor.classList.contains("masked") })
-        Array.prototype.forEach.call(neightbors, function (n) { n.click() })
+        Array.prototype.forEach.call(neightbors, function triggerfriends (n) { setTimeout(function () {n.click()}, 5) } )
       }
       that.game()
     })
@@ -79,7 +78,6 @@ Game.prototype.game = function () {
     this.result = "lost"
     alert("you lost")
   } else if (document.getElementsByClassName("masked").length === this.bomb_n) {
-    console.log(masked)
     Array.prototype.forEach.call(masked, function(cell) { cell.classList.remove("masked") })
     this.result = "won"
     alert("you won")
