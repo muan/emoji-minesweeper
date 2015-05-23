@@ -127,3 +127,9 @@ Game.prototype.shuffle = function (array) {
   }
   return array
 }
+
+// console documentation
+
+console.log("Use: `new Game(cols, rows, bombs, [emptyemoji, bombemoji, flagemoji, starteremoji])` to start a new game with customizations.")
+console.log(' Eg: `new Game(10, 10, 10, ["", "", "", "◻️"])`')
+console.log(' Or: `new Game(16, 16, 30, ["🐱", "📛", "💣", "🔍"])`')
