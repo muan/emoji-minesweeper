@@ -84,14 +84,14 @@
     <br>
     <div id="map"></div>
     <script>
-      new Game(10, 10, 10, ["🐣", "💣", "🚧", "◻️"], true)
+      game = new Game(10, 10, 10, ["🐣", "💣", "🚧", "◻️"], true)
 
       document.getElementById("js-emoji").addEventListener("click", function() {
-        new Game(10, 10, 10, ["🐣", "💣", "🚧", "◻️"], false)
+        game.restart(false)
       })
 
       document.getElementById("js-twemoji").addEventListener("click", function() {
-        new Game(10, 10, 10, ["🐣", "💣", "🚧", "◻️"], true)
+        game.restart(true)
       })
     </script>
     <br>

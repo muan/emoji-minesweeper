@@ -4,7 +4,6 @@ var Game = function (x, y, bomb_n, emojiset, twemoji){
   this.twemoji = twemoji || false
   this.emojiset = emojiset
   this.map = document.getElementById("map")
-  this.map.innerHTML = ""
   this.x = x
   this.y = y
   this.bomb_n = bomb_n
@@ -16,6 +15,7 @@ var Game = function (x, y, bomb_n, emojiset, twemoji){
 
 Game.prototype.init = function () {
   var that = this
+  this.map.innerHTML = ""
   this.bomb_arr().forEach(function (a, i) {
     var mine = that.mine(a)
     var x_cord = Math.floor((i+1)%that.x) || that.x
@@ -95,6 +95,12 @@ Game.prototype.game = function () {
   }
 }
 
+Game.prototype.restart = function (twemoji) {
+  this.result = false
+  this.twemoji = twemoji
+  this.init()
+}
+
 Game.prototype.mine = function (bomb) {
   var that = this
   var base = document.createElement("span")
@@ -143,5 +149,5 @@ Game.prototype.shuffle = function (array) {
 // console documentation
 
 console.log("Use: `new Game(cols, rows, bombs, [emptyemoji, bombemoji, flagemoji, starteremoji], twemojiOrNot)` to start a new game with customizations.")
-console.log(' Eg: `new Game(10, 10, 10, ["🌱", "💥", "🚩", "◻️"], false)`')
-console.log(' Or: `new Game(16, 16, 30, ["🐣", "💣", "🚧", "◻️"], true)`')
+console.log(' Eg: `game = new Game(10, 10, 10, ["🌱", "💥", "🚩", "◻️"], false)`')
+console.log(' Or: `game = new Game(16, 16, 30, ["🐣", "💣", "🚧", "◻️"], true)`')
