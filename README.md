@@ -24,7 +24,8 @@ new Game(16, 16, 30, ["🐱", "📛", "💣", "🔍"], false)
 - levels
 - time?
 - count clicks
-- better win/lose than alerts lol
+- better you won/you lost notices than alerts lol
+- find a way to clicking 9 cells at the same time
 
 ### Zap :zap:
 
