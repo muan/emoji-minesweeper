@@ -31,12 +31,12 @@ Game.prototype.init = function () {
   var cells = document.querySelectorAll(".cell")
   for(var i=0; i < cells.length; i++) {
     var obj = cells[i]
-    if (obj.bomb) { continue }
+    if (obj.isBomb) { continue }
     var count = 0
     Array.prototype.forEach.call(document.querySelectorAll(obj.neightbors), function (n) {
-      if (n.bomb) count ++
+      if (n.isBomb) count ++
     })
-    if (count === 0) obj.is_space = true
+    if (count === 0) obj.isSpace = true
     obj.mine_count = count
   }
 
@@ -48,23 +48,24 @@ Game.prototype.bindEvents = function () {
   var cells = document.getElementsByClassName("cell")
   Array.prototype.forEach.call(cells, function (target){
     target.addEventListener("click", function() {
-      if (!target.classList.contains("masked") || target.flagged) return false
+      if (!target.isMasked || target.isFlagged) return false
       target.reveal()
-      target.classList.remove("masked")
-      if (target.is_space) {
-        var neightbors = Array.prototype.filter.call(document.querySelectorAll(target.neightbors), function (neightbor) { return neightbor.classList.contains("masked") })
+      target.isMasked = false
+      target.classList.add("unmasked")
+      if (target.isSpace) {
+        var neightbors = Array.prototype.filter.call(document.querySelectorAll(target.neightbors), function (neightbor) { return neightbor.isMasked })
         Array.prototype.forEach.call(neightbors, function triggerfriends (n) { setTimeout(function () {n.click()}, 5) } )
       }
       that.game()
     })
 
     target.addEventListener("contextmenu", function (evt) {
-      if (target.flagged) {
+      if (target.isFlagged) {
         target.innerText = that.emojiset[3]
-        target.flagged = false
+        target.isFlagged = false
       } else {
         target.innerText = that.emojiset[2]
-        target.flagged = true
+        target.isFlagged = true
       }
       evt.preventDefault()
     })
@@ -74,17 +75,19 @@ Game.prototype.bindEvents = function () {
 Game.prototype.game = function () {
   if (this.result) return false
   var cells = document.getElementsByClassName("cell")
-  var masked = document.getElementsByClassName("masked")
+  var masked = Array.prototype.filter.call(cells, function (cell) {
+    return cell.isMasked
+  })
   var bombs = Array.prototype.filter.call(cells, function (cell) {
-    return cell.bomb === true && !cell.classList.contains("masked")
+    return cell.isBomb && !cell.isMasked
   })
 
   if (bombs.length > 0) {
-    Array.prototype.forEach.call(masked, function(cell) { cell.reveal() })
+    Array.prototype.forEach.call(masked, function(cell) { cell.reveal(); cell.classList.add("unmasked") })
     this.result = "lost"
     alert("you lost")
   } else if (document.getElementsByClassName("masked").length === this.bomb_n) {
-    Array.prototype.forEach.call(masked, function(cell) { cell.classList.remove("masked") })
+    Array.prototype.forEach.call(masked, function(cell) { cell.reveal(); cell.classList.add("unmasked") })
     this.result = "won"
     alert("you won")
   }
@@ -93,11 +96,12 @@ Game.prototype.game = function () {
 Game.prototype.mine = function (bomb) {
   var that = this
   var base = document.createElement("span")
-  base.className = "cell masked"
+  base.className = "cell"
   base.innerText = this.emojiset[3]
-  if (bomb) base.bomb = true
+  base.isMasked = true
+  if (bomb) base.isBomb = true
   base.reveal = function () {
-    this.innerText = this.bomb ? that.emojiset[1] : that.numbermoji[this.mine_count]
+    this.innerText = this.isBomb ? that.emojiset[1] : that.numbermoji[this.mine_count]
   }
   return base
 }
