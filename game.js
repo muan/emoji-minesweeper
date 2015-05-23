@@ -36,12 +36,11 @@ Game.prototype.init = function () {
     Array.prototype.forEach.call(document.querySelectorAll(obj.neightbors), function (n) {
       if (n.bomb) count ++
     })
-    if (count === 0) obj.classList.add("space")
-    obj.innerText = that.numbermoji[count]
+    if (count === 0) obj.is_space = true
+    obj.mine_count = count
   }
 
   this.bindEvents()
-  this.customizeEmoji()
 }
 
 Game.prototype.bindEvents = function () {
@@ -49,9 +48,10 @@ Game.prototype.bindEvents = function () {
   var cells = document.getElementsByClassName("cell")
   Array.prototype.forEach.call(cells, function (target){
     target.addEventListener("click", function() {
-      if (!target.classList.contains("masked") || target.classList.contains("flagged")) return false
+      if (!target.classList.contains("masked") || target.flagged) return false
+      target.reveal()
       target.classList.remove("masked")
-      if (target.classList.contains("space")) {
+      if (target.is_space) {
         var neightbors = Array.prototype.filter.call(document.querySelectorAll(target.neightbors), function (neightbor) { return neightbor.classList.contains("masked") })
         Array.prototype.forEach.call(neightbors, function triggerfriends (n) { setTimeout(function () {n.click()}, 5) } )
       }
@@ -59,7 +59,13 @@ Game.prototype.bindEvents = function () {
     })
 
     target.addEventListener("contextmenu", function (evt) {
-      target.classList.contains("flagged") ? target.classList.remove("flagged") : target.classList.add("flagged")
+      if (target.flagged) {
+        target.innerText = that.emojiset[3]
+        target.flagged = false
+      } else {
+        target.innerText = that.emojiset[2]
+        target.flagged = true
+      }
       evt.preventDefault()
     })
   })
@@ -74,7 +80,7 @@ Game.prototype.game = function () {
   })
 
   if (bombs.length > 0) {
-    Array.prototype.forEach.call(masked, function(cell) { cell.classList.remove("masked") })
+    Array.prototype.forEach.call(masked, function(cell) { cell.reveal() })
     this.result = "lost"
     alert("you lost")
   } else if (document.getElementsByClassName("masked").length === this.bomb_n) {
@@ -85,11 +91,13 @@ Game.prototype.game = function () {
 }
 
 Game.prototype.mine = function (bomb) {
+  var that = this
   var base = document.createElement("span")
   base.className = "cell masked"
-  if (bomb) {
-    base.bomb = true
-    base.innerText = this.emojiset[1]
+  base.innerText = this.emojiset[3]
+  if (bomb) base.bomb = true
+  base.reveal = function () {
+    this.innerText = this.bomb ? that.emojiset[1] : that.numbermoji[this.mine_count]
   }
   return base
 }
@@ -104,14 +112,6 @@ Game.prototype.bomb_arr = function () {
     arr.push(false)
   }
   return this.shuffle(arr)
-}
-
-Game.prototype.customizeEmoji = function () {
-  var oldstyle = document.querySelector("#map style")
-  if (oldstyle) oldstyle.remove()
-  var style = document.createElement("style")
-  style.innerText = ".cell.masked:before { content: '" + this.emojiset[3] + "'; } .masked.flagged:before { content: '" + this.emojiset[2] + "'; }"
-  this.map.appendChild(style)
 }
 
 Game.prototype.shuffle = function (array) {
