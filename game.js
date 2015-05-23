@@ -1,6 +1,7 @@
-var Game = function (x, y, bomb_n, emojiset){
+var Game = function (x, y, bomb_n, emojiset, twemoji){
   this.cell_n = x*y
   if (this.cell_n > 500) { alert("too big, go away"); return false }
+  this.twemoji = twemoji || false
   this.emojiset = emojiset
   this.map = document.getElementById("map")
   this.map.innerHTML = ""
@@ -40,6 +41,7 @@ Game.prototype.init = function () {
     obj.mine_count = count
   }
 
+  if (this.twemoji) this.prepareTwemoji()
   this.bindEvents()
 }
 
@@ -61,10 +63,10 @@ Game.prototype.bindEvents = function () {
 
     target.addEventListener("contextmenu", function (evt) {
       if (target.isFlagged) {
-        target.innerText = that.emojiset[3]
+        target.innerHTML = that.twemoji ? twemoji.parse(that.emojiset[3]) : that.emojiset[3]
         target.isFlagged = false
       } else {
-        target.innerText = that.emojiset[2]
+        target.innerHTML = that.twemoji ? twemoji.parse(that.emojiset[2]) : that.emojiset[2]
         target.isFlagged = true
       }
       evt.preventDefault()
@@ -97,13 +99,21 @@ Game.prototype.mine = function (bomb) {
   var that = this
   var base = document.createElement("span")
   base.className = "cell"
-  base.innerText = this.emojiset[3]
+  base.innerHTML = this.twemoji ? twemoji.parse(this.emojiset[3]) : this.emojiset[3]
   base.isMasked = true
   if (bomb) base.isBomb = true
   base.reveal = function () {
-    this.innerText = this.isBomb ? that.emojiset[1] : that.numbermoji[this.mine_count]
+    var emoji = this.isBomb ? that.emojiset[1] : that.numbermoji[this.mine_count]
+    this.innerHTML = that.twemoji ? twemoji.parse(emoji) : emoji
   }
   return base
+}
+
+Game.prototype.prepareTwemoji = function () {
+  this.emojiset.concat(this.numbermoji).forEach(function(emoji) {
+    var image = new Image()
+    image.src = twemoji.parse(emoji).match(/src=\"(.+)\">/)[1]
+  })
 }
 
 Game.prototype.bomb_arr = function () {
@@ -132,6 +142,6 @@ Game.prototype.shuffle = function (array) {
 
 // console documentation
 
-console.log("Use: `new Game(cols, rows, bombs, [emptyemoji, bombemoji, flagemoji, starteremoji])` to start a new game with customizations.")
-console.log(' Eg: `new Game(10, 10, 10, ["", "", "", "◻️"])`')
-console.log(' Or: `new Game(16, 16, 30, ["🐱", "📛", "💣", "🔍"])`')
+console.log("Use: `new Game(cols, rows, bombs, [emptyemoji, bombemoji, flagemoji, starteremoji], twemojiOrNot)` to start a new game with customizations.")
+console.log(' Eg: `new Game(10, 10, 10, ["🌱", "💥", "🚩", "◻️"], false)`')
+console.log(' Or: `new Game(16, 16, 30, ["🐣", "💣", "🚧", "◻️"], true)`')

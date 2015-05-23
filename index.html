@@ -2,17 +2,27 @@
 <html>
   <head>
     <title>💥</title>
+
     <!-- 👋 this is a wip don't be mean -->
     <!-- check out https://github.com/muan/emoji-minesweeper -->
     <script src="game.js"></script>
+
+    <!-- haiiii https://github.com/twitter/twemoji is awesome -->
+    <script src="http://twemoji.maxcdn.com/twemoji.min.js"></script>
+
     <style type="text/css">
       body {
         font-family: AppleColorEmoji;
         font-size: 15px;
         text-align: center;
       }
+
       div, span {
         box-sizing: border-box;
+      }
+
+      .emoji {
+        width: 100%;
       }
 
       .cell {
@@ -40,7 +50,7 @@
   <body>
     <div id="map"></div>
     <script>
-      new Game(10, 10, 10, ["🌱", "💥", "🚩", "◻️"])
+      new Game(10, 10, 10, ["🐣", "💀", "🚧", "◻️"], true)
     </script>
   </body>
 </html>
