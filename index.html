@@ -3,6 +3,7 @@
   <head>
     <title>💥</title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link href="http://fonts.googleapis.com/css?family=Changa+One" rel="stylesheet" type="text/css">
 
     <!-- 👋 this is a wip don't be mean -->
     <!-- check out https://github.com/muan/emoji-minesweeper -->
@@ -112,6 +113,23 @@
         border-radius: 3px;
         white-space: nowrap;
       }
+
+      #outcome {
+        margin: 0px auto;
+        color: #666;
+        font-family: "Changa One", "Arial Black", "Arial Bold", sans-serif;
+        font-size: 20px;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .moves {
+        color: #e91e63;
+      }
+
+      .time {
+        color: #03A9F4;
+      }
     </style>
   </head>
   <body>
@@ -125,6 +143,9 @@
     <a href="#" id="new-game" class="btn">Set / restart</a>
     <br>
     <div id="map"></div>
+    <div id="outcome" style="display: block;"></div>
+    <br>
+
     <script>
       var emojiset = ["🐣", "💣", "🚧", "◻️"]
       var cols = document.getElementById('cols')
@@ -143,10 +164,5 @@
         game.restart(document.getElementById('twemoji').checked)
       }
     </script>
-    <br>
-    <span class="btn customize">
-      CUSTOMIZE
-      <code>new Game(cols, rows, bombs, [emptyemoji, bombemoji, flagemoji, starteremoji], twemojiOrNot)</code>
-    </a>
   </body>
 </html>

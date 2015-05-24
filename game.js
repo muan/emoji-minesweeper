@@ -5,6 +5,7 @@ var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
   this.twemoji = twemoji || false
   this.emojiset = emojiset
   this.map = document.getElementById('map')
+  this.outcome = document.getElementById('outcome')
   this.cols = Number(cols)
   this.rows = Number(rows)
   this.number_of_bombs = Number(number_of_bombs)
@@ -18,13 +19,15 @@ Game.prototype.init = function () {
   if (this.number_of_cells > 500) { alert('too big, go away'); return false }
   if (this.number_of_cells <= this.number_of_bombs) { alert('too many bombs, are you drunk?'); return false }
   var that = this
+  this.moves = 0
   this.map.innerHTML = ''
+  this.outcome.innerHTML = ''
   this.bomb_array().forEach(function (a, i) {
     var mine = that.mine(a)
     var x_cord = Math.floor((i + 1) % that.cols) || that.cols
     var y_cord = Math.ceil((i + 1) / that.cols)
     mine.classList.add('x' + x_cord, 'y' + y_cord)
-    mine.neightbors = [('.x' + x_cord + '.y' + (y_cord + 1)), ('.x' + x_cord + '.y' + (y_cord - 1)),
+    mine.neighbors = [('.x' + x_cord + '.y' + (y_cord + 1)), ('.x' + x_cord + '.y' + (y_cord - 1)),
                        ('.x' + (x_cord + 1) + '.y' + (y_cord + 1)), ('.x' + (x_cord + 1) + '.y' + (y_cord - 1)), ('.x' + (x_cord + 1) + '.y' + y_cord),
                        ('.x' + (x_cord - 1) + '.y' + (y_cord + 1)), ('.x' + (x_cord - 1) + '.y' + (y_cord - 1)), ('.x' + (x_cord - 1) + '.y' + y_cord)]
 
@@ -37,7 +40,7 @@ Game.prototype.init = function () {
     var obj = cells[i]
     if (obj.isBomb) continue
     var count = 0
-    Array.prototype.forEach.call(document.querySelectorAll(obj.neightbors), function (n) {
+    Array.prototype.forEach.call(document.querySelectorAll(obj.neighbors), function (n) {
       if (n.isBomb) count++
     })
     if (count === 0) obj.isSpace = true
@@ -46,11 +49,17 @@ Game.prototype.init = function () {
 
   if (this.twemoji) this.prepareTwemoji()
   this.bindEvents()
+  this.start_time = new Date()
 }
 
 Game.prototype.bindEvents = function () {
   var that = this
   var cells = document.getElementsByClassName('cell')
+
+  this.map.addEventListener('mousedown', function() {
+    that.moves++
+  });
+
   Array.prototype.forEach.call(cells, function (target) {
     // clicking on a cell and revealing cell
     target.addEventListener('click', function () {
@@ -61,11 +70,11 @@ Game.prototype.bindEvents = function () {
         document.getElementsByClassName(targetClasses)[0].click()
         return
       }
-
+      
       target.reveal()
       if (target.isSpace) {
-        var neightbors = Array.prototype.filter.call(document.querySelectorAll(target.neightbors), function (neightbor) { return neightbor.isMasked })
-        Array.prototype.forEach.call(neightbors, function triggerfriends (n) { setTimeout(function () {n.click()}, 5) })
+        var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neighbor) { return neighbor.isMasked })
+        Array.prototype.forEach.call(neighbors, function triggerfriends (n) { setTimeout(function () {n.click()}, 5) })
       }
       that.game()
     })
@@ -107,11 +116,13 @@ Game.prototype.game = function () {
   if (bombs.length > 0) {
     Array.prototype.forEach.call(masked, function (cell) { cell.reveal() })
     this.result = 'lost'
-    alert('you lost')
+    var seconds = (new Date() - this.start_time)/1000
+    this.showMessage(seconds)
   } else if (masked.length === this.number_of_bombs) {
     Array.prototype.forEach.call(masked, function (cell) { cell.reveal() })
     this.result = 'won'
-    alert('you won')
+    var seconds = (new Date() - this.start_time)/1000
+    this.showMessage(seconds)
   }
 }
 
@@ -166,6 +177,19 @@ Game.prototype.shuffle = function (array) {
     array[randomIndex] = temporaryValue
   }
   return array
+}
+
+Game.prototype.showMessage = function(seconds) {
+  var winner = this.result == 'won'
+  var emoji = winner ? '👑': '💀'
+  var cheer = winner ? 'oh yeah!' : 'oh noessss'
+  var verb = winner ? 'won in ' : 'lost after '
+  var bye = winner ? 'hurray!' : 'better luck next time!'
+  var moves_word = this.moves == 1 ? 'move' : 'moves'
+  this.outcome.innerHTML =
+    emoji + '<br>' + cheer + '<br>' +
+    'you ' + verb + '<span class="moves">' + this.moves + '</span> ' + moves_word + ' and ' +
+    '<span class="time">' + Math.round(seconds * 100) / 100 + '</span> seconds <br>' + bye
 }
 
 // console documentation
