@@ -2,13 +2,14 @@
 <html>
   <head>
     <title>💥</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
     <!-- 👋 this is a wip don't be mean -->
     <!-- check out https://github.com/muan/emoji-minesweeper -->
-    <script src="game.js"></script>
 
     <!-- haiiii https://github.com/twitter/twemoji is awesome -->
     <script src="http://twemoji.maxcdn.com/twemoji.min.js"></script>
+    <script src="game.js"></script>
 
     <style type="text/css">
       body {
@@ -22,7 +23,7 @@
         box-sizing: border-box;
       }
 
-      .btn {
+      .btn, .input {
         background: #f0f0f0;
         padding: 12px 15px;
         margin: 0 10px;
@@ -35,6 +36,11 @@
         color: #666;
         font-weight: bold;
         display: inline-block;
+      }
+
+      .input {
+        border: 0;
+        width: 60px;
       }
 
       code {
@@ -82,16 +88,25 @@
   <body>
     <a href="#" id="js-emoji" class="btn">Restart (native emoji)</a>
     <a href="#" id="js-twemoji" class="btn">Restart (twemoji)</a>
+    <input id="cols" class="input" type="number" value="10">x
+    <input id="rows" class="input" type="number" value="10">
+    💣<input id="bombs" class="input" type="number" value="10">
     <br>
     <div id="map"></div>
     <script>
-      game = new Game(10, 10, 10, ["🐣", "💣", "🚧", "◻️"], true)
+      var cols = document.getElementById('cols')
+      var rows = document.getElementById('rows')
+      var bombs = document.getElementById('bombs')
+
+      game = new Game(cols.value, rows.value, bombs.value, ["🐣", "💣", "🚧", "◻️"], true)
 
       document.getElementById("js-emoji").addEventListener("click", function() {
+        game = new Game(cols.value, rows.value, bombs.value, ["🐣", "💣", "🚧", "◻️"], true)
         game.restart(false)
       })
 
       document.getElementById("js-twemoji").addEventListener("click", function() {
+        game = new Game(cols.value, rows.value, bombs.value, ["🐣", "💣", "🚧", "◻️"], true)
         game.restart(true)
       })
     </script>
