@@ -4,9 +4,9 @@ var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
   this.twemoji = twemoji || false
   this.emojiset = emojiset
   this.map = document.getElementById('map')
-  this.cols = cols
-  this.rows = rows
-  this.number_of_bombs = number_of_bombs
+  this.cols = Number(cols)
+  this.rows = Number(rows)
+  this.number_of_bombs = Number(number_of_bombs)
   this.rate = number_of_bombs / this.number_of_cells
   this.numbermoji = [this.emojiset[0], '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣']
 
