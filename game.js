@@ -110,7 +110,7 @@ Game.prototype.restart = function (twemoji) {
   this.init()
 }
 
-Game.prototype.mine = function (bomb, x_cord, y_cord) {
+Game.prototype.mine = function (bomb) {
   var that = this
   var base = document.createElement('span')
   base.className = 'cell'
