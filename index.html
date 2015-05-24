@@ -19,28 +19,57 @@
         padding: 20px;
       }
 
-      span {
+      span, input, a {
         box-sizing: border-box;
       }
 
       .btn, .input {
-        background: #f0f0f0;
         padding: 12px 15px;
-        margin: 0 10px;
+        margin: 0 10px 10px;
         font-size: 0.65em;
         border-radius: 3px;
-        text-decoration: none;
         font-family: helvetica, sans-serif;
-        text-transform: uppercase;;
-        letter-spacing: 1px;
         color: #666;
         font-weight: bold;
         display: inline-block;
       }
 
+      .btn {
+        background: #f0f0f0;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      input[type=radio] {
+        margin: 0 5px 0 0;
+      }
+
+      input[type=number] {
+        padding-right: 5px;
+      }
+
       .input {
-        border: 0;
-        width: 60px;
+        border: 1px solid #e0e0e0;
+        width: 50px;
+      }
+
+      .prepend-input {
+        display: inline-block;
+        padding: 11px 0 10px 8px;
+        border: 1px solid #e0e0e0;
+        line-height: 1;
+        margin-left: 10px;
+        vertical-align: top;
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
+      }
+
+      .prepend-input + input {
+        margin-left: 0;
+        border-left: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
       }
 
       code {
@@ -77,7 +106,7 @@
 
       #map {
         display: inline-block;
-        margin: 30px 0;
+        margin: 10px 0 20px;
         padding: 5px;
         border: 5px solid #eee;
         border-radius: 3px;
@@ -86,29 +115,33 @@
     </style>
   </head>
   <body>
-    <a href="#" id="js-emoji" class="btn">Restart (native emoji)</a>
-    <a href="#" id="js-twemoji" class="btn">Restart (twemoji)</a>
+    <label class="btn"><input type="radio" name="emoji" id="twemoji" checked> Twemoji</label>
+    <label class="btn"><input type="radio" name="emoji" id="emoji"> Native emoji</label>
+    <br>
+
     <input id="cols" class="input" type="number" value="10">x
     <input id="rows" class="input" type="number" value="10">
-    💣<input id="bombs" class="input" type="number" value="10">
+    <div class="prepend-input">💣</div><input id="bombs" class="input" type="number" value="10">
+    <a href="#" id="new-game" class="btn">Set / restart</a>
     <br>
     <div id="map"></div>
     <script>
+      var emojiset = ["🐣", "💣", "🚧", "◻️"]
       var cols = document.getElementById('cols')
       var rows = document.getElementById('rows')
       var bombs = document.getElementById('bombs')
 
-      game = new Game(cols.value, rows.value, bombs.value, ["🐣", "💣", "🚧", "◻️"], true)
+      game = new Game(cols.value, rows.value, bombs.value, emojiset, document.getElementById('twemoji').checked)
 
-      document.getElementById("js-emoji").addEventListener("click", function() {
-        game = new Game(cols.value, rows.value, bombs.value, ["🐣", "💣", "🚧", "◻️"], true)
-        game.restart(false)
+      document.getElementById("twemoji").addEventListener("click", restart)
+      document.getElementById("emoji").addEventListener("click", restart)
+      document.getElementById("new-game").addEventListener("click", function() {
+        game = new Game(cols.value, rows.value, bombs.value, emojiset, document.getElementById('twemoji').checked)
       })
 
-      document.getElementById("js-twemoji").addEventListener("click", function() {
-        game = new Game(cols.value, rows.value, bombs.value, ["🐣", "💣", "🚧", "◻️"], true)
-        game.restart(true)
-      })
+      function restart () {
+        game.restart(document.getElementById('twemoji').checked)
+      }
     </script>
     <br>
     <span class="btn customize">
