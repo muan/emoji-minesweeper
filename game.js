@@ -1,3 +1,5 @@
+/* global twemoji, alert */
+
 var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
   this.number_of_cells = cols * rows
   if (this.number_of_cells > 500) { alert('too big, go away'); return }
@@ -129,7 +131,7 @@ Game.prototype.mine = function (bomb) {
 
 Game.prototype.prepareTwemoji = function () {
   this.emojiset.concat(this.numbermoji).forEach(function (emoji) {
-    var image = new Image()
+    var image = document.createElement('img')
     image.src = twemoji.parse(emoji).match(/src=\"(.+)\">/)[1]
   })
 }
