@@ -9,7 +9,6 @@ var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
   this.number_of_bombs = Number(number_of_bombs)
   this.rate = number_of_bombs / this.number_of_cells
   this.numbermoji = [this.emojiset[0], '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣']
-  this.lastClick = null
 
   this.init()
 }
@@ -18,9 +17,9 @@ Game.prototype.init = function () {
   var that = this
   this.map.innerHTML = ''
   this.bomb_array().forEach(function (a, i) {
+    var mine = that.mine(a)
     var x_cord = Math.floor((i + 1) % that.cols) || that.cols
     var y_cord = Math.ceil((i + 1) / that.cols)
-    var mine = that.mine(a, x_cord, y_cord)
     mine.classList.add('x' + x_cord, 'y' + y_cord)
     mine.neightbors = [('.x' + x_cord + '.y' + (y_cord + 1)), ('.x' + x_cord + '.y' + (y_cord - 1)),
                        ('.x' + (x_cord + 1) + '.y' + (y_cord + 1)), ('.x' + (x_cord + 1) + '.y' + (y_cord - 1)), ('.x' + (x_cord + 1) + '.y' + y_cord),
@@ -51,8 +50,16 @@ Game.prototype.bindEvents = function () {
   var cells = document.getElementsByClassName('cell')
   Array.prototype.forEach.call(cells, function (target) {
     target.addEventListener('click', function () {
-      that.lastClick = target
       if (!target.isMasked || target.isFlagged) return false
+      if (target.isBomb) {
+        var unmaskedCount = document.getElementsByClassName('cell unmasked').length
+        if(unmaskedCount === 0) {
+          that.restart(that.twemoji)
+          var targetClasses = target.getAttribute('class').replace('unmasked', '')
+          document.getElementsByClassName(targetClasses)[0].click()
+          return;
+        }
+      }
       target.reveal()
       target.isMasked = false
       target.classList.add('unmasked')
@@ -87,13 +94,6 @@ Game.prototype.game = function () {
   })
 
   if (bombs.length > 0) {
-    if(masked.length === this.number_of_cells - 1) {
-      this.init()
-      this.lastClick.isMasked = true
-      document.getElementsByClassName('cell x' + this.lastClick.x_cord + ' y' + this.lastClick.y_cord)[0].click()
-      return
-    }
-
     Array.prototype.forEach.call(masked, function (cell) { cell.reveal(); cell.classList.add('unmasked') })
     this.result = 'lost'
     alert('you lost')
@@ -116,8 +116,6 @@ Game.prototype.mine = function (bomb, x_cord, y_cord) {
   base.className = 'cell'
   base.innerHTML = this.twemoji ? twemoji.parse(this.emojiset[3]) : this.emojiset[3]
   base.isMasked = true
-  base.x_cord = x_cord
-  base.y_cord = y_cord
   if (bomb) base.isBomb = true
   base.reveal = function () {
     var emoji = this.isBomb ? that.emojiset[1] : that.numbermoji[this.mine_count]
