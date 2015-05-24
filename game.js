@@ -2,7 +2,6 @@
 
 var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
   this.number_of_cells = cols * rows
-  if (this.number_of_cells > 500) { alert('too big, go away'); return }
   this.twemoji = twemoji || false
   this.emojiset = emojiset
   this.map = document.getElementById('map')
@@ -16,6 +15,8 @@ var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
 }
 
 Game.prototype.init = function () {
+  if (this.number_of_cells > 500) { alert('too big, go away'); return false }
+  if (this.number_of_cells <= this.number_of_bombs) { alert('too many bombs, are you drunk?'); return false }
   var that = this
   this.map.innerHTML = ''
   this.bomb_array().forEach(function (a, i) {
