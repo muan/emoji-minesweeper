@@ -54,6 +54,13 @@ Game.prototype.bindEvents = function () {
     // clicking on a cell and revealing cell
     target.addEventListener('click', function () {
       if (!target.isMasked || target.isFlagged) return
+      if (target.isBomb && document.getElementsByClassName('unmasked').length === 0) {
+        that.restart(that.twemoji)
+        var targetClasses = target.className.replace('unmasked', '')
+        document.getElementsByClassName(targetClasses)[0].click()
+        return
+      }
+
       target.reveal()
       if (target.isSpace) {
         var neightbors = Array.prototype.filter.call(document.querySelectorAll(target.neightbors), function (neightbor) { return neightbor.isMasked })
