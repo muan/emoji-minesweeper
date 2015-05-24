@@ -26,6 +26,7 @@ new Game(16, 16, 30, ["🐱", "📛", "💣", "🔍"], false)
 - count clicks
 - better you won/you lost notices than alerts lol
 - MOBILE! MOBILE! MOBILE!
+- Emoji Minesweeper Themes, yes!
 
 ### Zap :zap:
 
