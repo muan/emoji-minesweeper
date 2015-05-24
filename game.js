@@ -62,6 +62,8 @@ Game.prototype.bindEvents = function () {
     })
 
     target.addEventListener('contextmenu', function (evt) {
+      evt.preventDefault()
+      if (!target.isMasked) { return; }
       if (target.isFlagged) {
         target.innerHTML = that.twemoji ? twemoji.parse(that.emojiset[3]) : that.emojiset[3]
         target.isFlagged = false
@@ -69,7 +71,6 @@ Game.prototype.bindEvents = function () {
         target.innerHTML = that.twemoji ? twemoji.parse(that.emojiset[2]) : that.emojiset[2]
         target.isFlagged = true
       }
-      evt.preventDefault()
     })
   })
 }
