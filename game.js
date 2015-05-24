@@ -1,6 +1,6 @@
 var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
   this.number_of_cells = cols * rows
-  if (this.number_of_cells > 500) { alert('too big, go away'); return false }
+  if (this.number_of_cells > 500) { alert('too big, go away'); return }
   this.twemoji = twemoji || false
   this.emojiset = emojiset
   this.map = document.getElementById('map')
@@ -49,11 +49,10 @@ Game.prototype.bindEvents = function () {
   var that = this
   var cells = document.getElementsByClassName('cell')
   Array.prototype.forEach.call(cells, function (target) {
+    // clicking on a cell and revealing cell
     target.addEventListener('click', function () {
-      if (!target.isMasked || target.isFlagged) return false
+      if (!target.isMasked || target.isFlagged) return
       target.reveal()
-      target.isMasked = false
-      target.classList.add('unmasked')
       if (target.isSpace) {
         var neightbors = Array.prototype.filter.call(document.querySelectorAll(target.neightbors), function (neightbor) { return neightbor.isMasked })
         Array.prototype.forEach.call(neightbors, function triggerfriends (n) { setTimeout(function () {n.click()}, 5) })
@@ -61,9 +60,19 @@ Game.prototype.bindEvents = function () {
       that.game()
     })
 
+    // double clicking on a cell and opening the cell and all 8 of its neightbors
+    target.addEventListener('dblclick', function () {
+      if (target.isFlagged) return
+      target.reveal()
+      var neightbors = Array.prototype.filter.call(document.querySelectorAll(target.neightbors), function (neightbor) { return neightbor.isMasked && !neightbor.isFlagged })
+      Array.prototype.forEach.call(neightbors, function triggerfriends (n) { setTimeout(function () { n.click() }, 5) })
+      that.game()
+    })
+
+    // marking a cell as a potential bomb
     target.addEventListener('contextmenu', function (evt) {
       evt.preventDefault()
-      if (!target.isMasked) { return; }
+      if (!target.isMasked) { return }
       if (target.isFlagged) {
         target.innerHTML = that.twemoji ? twemoji.parse(that.emojiset[3]) : that.emojiset[3]
         target.isFlagged = false
@@ -76,7 +85,7 @@ Game.prototype.bindEvents = function () {
 }
 
 Game.prototype.game = function () {
-  if (this.result) return false
+  if (this.result) return
   var cells = document.getElementsByClassName('cell')
   var masked = Array.prototype.filter.call(cells, function (cell) {
     return cell.isMasked
@@ -86,11 +95,11 @@ Game.prototype.game = function () {
   })
 
   if (bombs.length > 0) {
-    Array.prototype.forEach.call(masked, function (cell) { cell.reveal(); cell.classList.add('unmasked') })
+    Array.prototype.forEach.call(masked, function (cell) { cell.reveal() })
     this.result = 'lost'
     alert('you lost')
   } else if (masked.length === this.number_of_bombs) {
-    Array.prototype.forEach.call(masked, function (cell) { cell.reveal(); cell.classList.add('unmasked') })
+    Array.prototype.forEach.call(masked, function (cell) { cell.reveal() })
     this.result = 'won'
     alert('you won')
   }
@@ -112,6 +121,8 @@ Game.prototype.mine = function (bomb) {
   base.reveal = function () {
     var emoji = this.isBomb ? that.emojiset[1] : that.numbermoji[this.mine_count]
     this.innerHTML = that.twemoji ? twemoji.parse(emoji) : emoji
+    this.isMasked = false
+    this.classList.add('unmasked')
   }
   return base
 }
