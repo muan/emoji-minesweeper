@@ -51,14 +51,11 @@ Game.prototype.bindEvents = function () {
   Array.prototype.forEach.call(cells, function (target) {
     target.addEventListener('click', function () {
       if (!target.isMasked || target.isFlagged) return false
-      if (target.isBomb) {
-        var unmaskedCount = document.getElementsByClassName('cell unmasked').length
-        if(unmaskedCount === 0) {
-          that.restart(that.twemoji)
-          var targetClasses = target.getAttribute('class').replace('unmasked', '')
-          document.getElementsByClassName(targetClasses)[0].click()
-          return;
-        }
+      if (target.isBomb && document.getElementsByClassName('unmasked').length === 0) {
+        that.restart(that.twemoji)
+        var targetClasses = target.className.replace('unmasked', '')
+        document.getElementsByClassName(targetClasses)[0].click()
+        return
       }
       target.reveal()
       target.isMasked = false
