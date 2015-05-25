@@ -56,13 +56,9 @@ Game.prototype.bindEvents = function () {
   var that = this
   var cells = document.getElementsByClassName('cell')
 
-  this.map.addEventListener('mousedown', function() {
-    that.moves++
-  })
-
   Array.prototype.forEach.call(cells, function (target) {
     // clicking on a cell and revealing cell
-    target.addEventListener('click', function () {
+    target.addEventListener('click', function (evt) {
       if (!target.isMasked || target.isFlagged) return
       if (target.isBomb && document.getElementsByClassName('unmasked').length === 0) {
         that.restart(that.twemoji)
@@ -70,11 +66,12 @@ Game.prototype.bindEvents = function () {
         document.getElementsByClassName(targetClasses)[0].click()
         return
       }
+      if (evt.view) that.moves++
 
       target.reveal()
       if (target.isSpace) {
         var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neighbor) { return neighbor.isMasked })
-        Array.prototype.forEach.call(neighbors, function triggerfriends (n) { setTimeout(function () {n.click()}, 5) })
+        Array.prototype.forEach.call(neighbors, function triggerfriends (n) { setTimeout(function () { n.dispatchEvent(new MouseEvent('click')) }, 5) })
       }
       that.game()
     })
@@ -82,9 +79,11 @@ Game.prototype.bindEvents = function () {
     // double clicking on a cell and opening the cell and all 8 of its neightbors
     target.addEventListener('dblclick', function () {
       if (target.isFlagged) return
+      that.moves++
+
       target.reveal()
       var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neightbor) { return neightbor.isMasked && !neightbor.isFlagged })
-      Array.prototype.forEach.call(neighbors, function triggerfriends (n) { setTimeout(function () { n.click() }, 5) })
+      Array.prototype.forEach.call(neighbors, function triggerfriends (n) { setTimeout(function () { n.dispatchEvent(new MouseEvent('click')) }, 5) })
       that.game()
     })
 
