@@ -235,6 +235,12 @@
       .settings-popup.show ~ * {
         visibility: hidden;
       }
+
+      .divider {
+        padding: 0 10px;
+        color: #999;
+        font-size: 0.65em;
+      }
     </style>
   </head>
   <body>
@@ -247,7 +253,7 @@
         </div>
         <div class="flex-table">
           <input id="cols" class="input flex-cell" type="number" value="10">
-          <div class="flex-cell-min">&nbsp;&nbsp;&times;&nbsp;&nbsp;</div>
+          <div class="flex-cell-min divider">&times;</div>
           <input id="rows" class="input flex-cell" type="number" value="10"><br>
         </div>
         <div class="prepend-input">💣</div>
