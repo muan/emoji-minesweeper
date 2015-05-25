@@ -177,7 +177,7 @@ Game.prototype.prepareTwemoji = function () {
 }
 
 Game.prototype.bomb_array = function () {
-  var chance = this.rate * this.number_of_cells
+  var chance = Math.floor(this.rate * this.number_of_cells)
   var arr = []
   for (var i = 0; i < chance; i++) {
     arr.push(true)
