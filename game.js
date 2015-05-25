@@ -155,8 +155,9 @@ Game.prototype.mine = function (bomb) {
   base.innerHTML = this.twemoji ? twemoji.parse(this.emojiset[3]) : this.emojiset[3]
   base.isMasked = true
   if (bomb) base.isBomb = true
-  base.reveal = function () {
-    var emoji = this.isBomb ? that.emojiset[1] : that.numbermoji[this.mine_count]
+  base.reveal = function (won) {
+    var bombemoji = won ? that.emojiset[2] : that.emojiset[1]
+    var emoji = this.isBomb ? bombemoji : that.numbermoji[this.mine_count]
     this.innerHTML = that.twemoji ? twemoji.parse(emoji) : emoji
     this.isMasked = false
     this.classList.add('unmasked')
