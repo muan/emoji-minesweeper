@@ -3,7 +3,7 @@
   <head>
     <title>💥</title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-    <link href="http://fonts.googleapis.com/css?family=Changa+One" rel="stylesheet" type="text/css">
+    <link href='http://fonts.googleapis.com/css?family=Exo+2' rel='stylesheet' type='text/css'>
 
     <!-- 👋 this is a wip don't be mean -->
     <!-- check out https://github.com/muan/emoji-minesweeper -->
@@ -29,17 +29,37 @@
         margin: 0 10px 10px;
         font-size: 0.65em;
         border-radius: 3px;
-        font-family: helvetica, sans-serif;
+        font-family: 'Exo 2', sans-serif;
         color: #666;
         font-weight: bold;
         display: inline-block;
       }
 
       .btn {
-        background: #f0f0f0;
+        background: #f7f7f7;
         text-decoration: none;
         text-transform: uppercase;
         letter-spacing: 1px;
+      }
+
+      .action-btn {
+        display: block;
+        font-size: 1.2em;
+        line-height: 1em;
+        padding: 10px;
+        border: 1px solid #eee;
+        text-decoration: none;
+        margin: 10px 10px 0;
+        border-radius: 5px;
+      }
+
+      .action-btn:hover {
+        background-color: #f4f4f4;
+      }
+
+      .action-btn .emoji {
+        width: 20px;
+        height: 20px;
       }
 
       input[type=radio] {
@@ -83,10 +103,6 @@
         text-align: left;
       }
 
-      .customize:hover code {
-        display: block;
-      }
-
       .cell .emoji {
         width: 100%;
       }
@@ -106,22 +122,55 @@
       }
 
       #map {
-        display: inline-block;
-        margin: 10px 0 20px;
-        padding: 5px;
-        border: 5px solid #eee;
-        border-radius: 3px;
+        padding: 10px;
         white-space: nowrap;
       }
 
-      #outcome {
-        margin: 0px auto;
-        color: #666;
-        font-family: "Changa One", "Arial Black", "Arial Bold", sans-serif;
-        font-size: 20px;
-        text-align: center;
-        text-transform: uppercase;
+      .wrapper {
+        border-radius: 10px;
+        margin-top: 10px;
+        border: 5px solid #f4f4f4;
+        display: inline-block;
       }
+
+      .won .default-emoji,
+      .lost .default-emoji {
+        display: none;
+      }
+
+      .lost {
+        box-shadow: 0 0 1px #f00;
+      }
+
+      .won {
+        box-shadow: 0 0 1px #1a1;
+      }
+
+      .bar {
+        background-color: #f4f4f4;
+        width: 100%;
+        display: table;
+      }
+
+      .stat {
+        font-size: 0.85em;
+        padding: 8px 10px 5px;
+        display: table-cell;
+        text-align: center;
+        font-family: "Exo 2", georgia;
+      }
+
+      .stat:after {
+        display: block;
+        color: #999;
+        margin-top: 5px;
+        font-size: 0.7em;
+        letter-spacing: 1px;
+      }
+
+      #moves:after { content: "MOVES"; }
+      #bombs-left:after { content: "BOMBS"; }
+      #timer:after { content: "TIME"; }
 
       .moves {
         color: #e91e63;
@@ -137,13 +186,23 @@
     <label class="btn"><input type="radio" name="emoji" id="emoji"> Native emoji</label>
     <br>
 
-    <input id="cols" class="input" type="number" value="10">x
+    <input id="cols" class="input" type="number" value="10"> &times;
     <input id="rows" class="input" type="number" value="10">
     <div class="prepend-input">💣</div><input id="bombs" class="input" type="number" value="10">
-    <a href="#" id="new-game" class="btn">Set / restart</a>
     <br>
-    <div id="map"></div>
-    <div id="outcome" style="display: block;"></div>
+    <div class="wrapper">
+      <a href="#" class="action-btn js-new-game">
+        <span class="default-emoji"></span>
+        <span id="result" class="result-emoji"></span>
+      </a>
+      <div id="map">
+      </div>
+      <div class="bar">
+        <div id="bombs-left" class="stat">0</div>
+        <div id="moves" class="stat">0</div>
+        <div id="timer" class="stat">0</div>
+      </div>
+    </div>
     <br>
 
     <script>
@@ -156,8 +215,10 @@
 
       document.getElementById("twemoji").addEventListener("click", restart)
       document.getElementById("emoji").addEventListener("click", restart)
-      document.getElementById("new-game").addEventListener("click", function() {
+      document.querySelector(".js-new-game").addEventListener("click", function() {
+        clearInterval(game.timer)
         game = new Game(cols.value, rows.value, bombs.value, emojiset, document.getElementById('twemoji').checked)
+        return false
       })
 
       function restart () {

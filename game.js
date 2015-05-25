@@ -5,7 +5,6 @@ var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
   this.twemoji = twemoji || false
   this.emojiset = emojiset
   this.map = document.getElementById('map')
-  this.outcome = document.getElementById('outcome')
   this.cols = Number(cols)
   this.rows = Number(rows)
   this.number_of_bombs = Number(number_of_bombs)
@@ -19,9 +18,8 @@ Game.prototype.init = function () {
   if (this.number_of_cells > 500) { alert('too big, go away'); return false }
   if (this.number_of_cells <= this.number_of_bombs) { alert('too many bombs, are you drunk?'); return false }
   var that = this
-  this.moves = 0
+  this.moveIt(true)
   this.map.innerHTML = ''
-  this.outcome.innerHTML = ''
   this.bomb_array().forEach(function (a, i) {
     var mine = that.mine(a)
     var x_cord = Math.floor((i + 1) % that.cols) || that.cols
@@ -48,8 +46,10 @@ Game.prototype.init = function () {
   }
 
   if (this.twemoji) this.prepareTwemoji()
+
+  this.resetMetadata()
   this.bindEvents()
-  this.startTime = new Date()
+  this.updateBombsLeft()
 }
 
 Game.prototype.bindEvents = function () {
@@ -60,13 +60,17 @@ Game.prototype.bindEvents = function () {
     // clicking on a cell and revealing cell
     target.addEventListener('click', function (evt) {
       if (!target.isMasked || target.isFlagged) return
-      if (target.isBomb && document.getElementsByClassName('unmasked').length === 0) {
-        that.restart(that.twemoji)
-        var targetClasses = target.className.replace('unmasked', '')
-        document.getElementsByClassName(targetClasses)[0].click()
-        return
+      if (document.getElementsByClassName('unmasked').length === 0) {
+        that.startTimer()
+
+        if (target.isBomb) {
+          that.restart(that.twemoji)
+          var targetClasses = target.className.replace('unmasked', '')
+          document.getElementsByClassName(targetClasses)[0].click()
+          return
+        }
       }
-      if (evt.view) that.moves++
+      if (evt.view) that.moveIt()
 
       target.reveal()
       if (target.isSpace) {
@@ -79,7 +83,7 @@ Game.prototype.bindEvents = function () {
     // double clicking on a cell and opening the cell and all 8 of its neightbors
     target.addEventListener('dblclick', function () {
       if (target.isFlagged) return
-      that.moves++
+      that.moveIt()
 
       target.reveal()
       var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neightbor) { return neightbor.isMasked && !neightbor.isFlagged })
@@ -98,6 +102,7 @@ Game.prototype.bindEvents = function () {
         target.innerHTML = that.twemoji ? twemoji.parse(that.emojiset[2]) : that.emojiset[2]
         target.isFlagged = true
       }
+      that.updateBombsLeft()
     })
   })
 }
@@ -115,13 +120,11 @@ Game.prototype.game = function () {
   if (bombs.length > 0) {
     Array.prototype.forEach.call(masked, function (cell) { cell.reveal() })
     this.result = 'lost'
-    var seconds = (new Date() - this.startTime)/1000
-    this.showMessage(seconds)
+    this.showMessage()
   } else if (masked.length === this.number_of_bombs) {
-    Array.prototype.forEach.call(masked, function (cell) { cell.reveal() })
+    Array.prototype.forEach.call(masked, function (cell) { cell.reveal(true) })
     this.result = 'won'
-    var seconds = (new Date() - this.startTime)/1000
-    this.showMessage(seconds)
+    this.showMessage()
   }
 }
 
@@ -129,6 +132,20 @@ Game.prototype.restart = function (twemoji) {
   this.result = false
   this.twemoji = twemoji
   this.init()
+}
+
+Game.prototype.resetMetadata = function () {
+  document.getElementById('timer').innerText = '0.00'
+  document.querySelector('.wrapper').classList.remove('won', 'lost')
+  document.querySelector('.result-emoji').innerText = ''
+  document.querySelector('.default-emoji').innerHTML = this.twemoji ? twemoji.parse('😀') : '😀'
+}
+
+Game.prototype.startTimer = function () {
+  this.startTime = new Date()
+  this.timer = setInterval(function() {
+    document.getElementById('timer').innerText = ((new Date() - game.startTime)/1000).toFixed(2)
+  }, 100)
 }
 
 Game.prototype.mine = function (bomb) {
@@ -178,17 +195,24 @@ Game.prototype.shuffle = function (array) {
   return array
 }
 
+Game.prototype.moveIt = function (zero) {
+  zero ? this.moves = 0 : this.moves++
+  document.getElementById('moves').innerText = this.moves
+}
+
+Game.prototype.updateBombsLeft = function () {
+  var flagged = Array.prototype.filter.call(document.getElementsByClassName('cell'), function (target) { return target.isFlagged })
+  document.getElementById('bombs-left').innerText = this.number_of_bombs - flagged.length
+}
+
 Game.prototype.showMessage = function(seconds) {
+  clearInterval(this.timer)
+  var seconds = ((new Date() - this.startTime)/1000).toFixed(2)
   var winner = this.result == 'won'
-  var emoji = winner ? '👑': '💀'
-  var cheer = winner ? 'oh yeah!' : 'oh noessss'
-  var verb = winner ? 'won in ' : 'lost after '
-  var bye = winner ? 'hurray!' : 'better luck next time!'
-  var moves_word = this.moves == 1 ? 'move' : 'moves'
-  this.outcome.innerHTML =
-    emoji + '<br>' + cheer + '<br>' +
-    'you ' + verb + '<span class="moves">' + this.moves + '</span> ' + moves_word + ' and ' +
-    '<span class="time">' + Math.round(seconds * 100) / 100 + '</span> seconds <br>' + bye
+  var emoji = winner ? '😎': '😵'
+  document.querySelector('.wrapper').classList.add(this.result)
+  document.getElementById('timer').innerText = seconds
+  document.getElementById('result').innerHTML = this.twemoji ? twemoji.parse(emoji) : emoji
 }
 
 // console documentation
