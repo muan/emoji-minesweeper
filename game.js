@@ -1,4 +1,4 @@
-/* global twemoji, alert */
+/* global twemoji, alert, MouseEvent, game */
 
 var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
   this.number_of_cells = cols * rows
@@ -143,8 +143,8 @@ Game.prototype.resetMetadata = function () {
 
 Game.prototype.startTimer = function () {
   this.startTime = new Date()
-  this.timer = setInterval(function() {
-    document.getElementById('timer').innerText = ((new Date() - game.startTime)/1000).toFixed(2)
+  this.timer = setInterval(function () {
+    document.getElementById('timer').innerText = ((new Date() - game.startTime) / 1000).toFixed(2)
   }, 100)
 }
 
@@ -206,11 +206,11 @@ Game.prototype.updateBombsLeft = function () {
   document.getElementById('bombs-left').innerText = this.number_of_bombs - flagged.length
 }
 
-Game.prototype.showMessage = function(seconds) {
+Game.prototype.showMessage = function () {
   clearInterval(this.timer)
-  var seconds = ((new Date() - this.startTime)/1000).toFixed(2)
-  var winner = this.result == 'won'
-  var emoji = winner ? '😎': '😵'
+  var seconds = ((new Date() - this.startTime) / 1000).toFixed(2)
+  var winner = this.result === 'won'
+  var emoji = winner ? '😎' : '😵'
   document.querySelector('.wrapper').classList.add(this.result)
   document.getElementById('timer').innerText = seconds
   document.getElementById('result').innerHTML = this.twemoji ? twemoji.parse(emoji) : emoji
