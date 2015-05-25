@@ -6,7 +6,7 @@
 
 ## WIP
 
-![emoji minesweeper game play demo](https://cloud.githubusercontent.com/assets/1153134/7797299/e496c5c2-031c-11e5-90c5-702437e65b9a.gif)
+![emoji minesweeper game play demo](https://cloud.githubusercontent.com/assets/1153134/7797311/19c09214-031d-11e5-99c3-2a380ac7984e.gif)
 
 ### API
 
