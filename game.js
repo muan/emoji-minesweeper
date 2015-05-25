@@ -129,7 +129,9 @@ Game.prototype.game = function () {
 }
 
 Game.prototype.restart = function (twemoji) {
+  clearInterval(this.timer)
   this.result = false
+  this.timer = false
   this.twemoji = twemoji
   this.init()
 }
@@ -142,6 +144,7 @@ Game.prototype.resetMetadata = function () {
 }
 
 Game.prototype.startTimer = function () {
+  if (this.timer) return
   this.startTime = new Date()
   this.timer = setInterval(function () {
     document.getElementById('timer').innerText = ((new Date() - game.startTime) / 1000).toFixed(2)
