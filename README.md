@@ -4,9 +4,15 @@
 
 [WHY IS THIS A QUESTION?!](https://twitter.com/muanchiou/status/601633821012856832)
 
-## WIP
+### WIP
 
 ![emoji minesweeper game play demo](https://cloud.githubusercontent.com/assets/1153134/7797311/19c09214-031d-11e5-99c3-2a380ac7984e.gif)
+
+### How to play
+
+- Left click to step on a spot
+- Right click to mark a spot as a bomb
+- Double clcik to open all 8 spots nearby a target (except ones already marked as bombs using right clicks)
 
 ### API
 
