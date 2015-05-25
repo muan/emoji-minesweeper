@@ -21,13 +21,12 @@
         padding: 20px 0;
       }
 
-      span, input, a {
+      span, input, a, div {
         box-sizing: border-box;
       }
 
       .btn, .input {
         padding: 12px 15px;
-        margin: 0 10px 10px;
         font-size: 0.65em;
         border-radius: 3px;
         font-family: 'Exo 2', sans-serif;
@@ -40,7 +39,25 @@
         background: #f7f7f7;
         text-decoration: none;
         text-transform: uppercase;
+        border: 0;
+        cursor: pointer;
+        margin-bottom: 10px;
         letter-spacing: 1px;
+      }
+
+      .flex-table {
+        display: table;
+      }
+
+      .flex-cell,
+      .flex-cell-min {
+        display: table-cell;
+        width: 99%;
+      }
+
+      .flex-cell-min {
+        width: 1%;
+        white-space: nowrap;
       }
 
       .action-btn {
@@ -73,25 +90,20 @@
 
       .input {
         border: 1px solid #e0e0e0;
-        width: 50px;
       }
 
       .prepend-input {
-        display: inline-block;
-        padding: 11px 0 10px 8px;
-        border: 1px solid #e0e0e0;
+        padding: 7px 0 6px 10px;
+        margin: 5px 0;
+        border-right: 1px solid #e0e0e0;
         line-height: 1;
-        margin-left: 10px;
-        vertical-align: top;
-        border-top-left-radius: 3px;
-        border-bottom-left-radius: 3px;
+        position: absolute;
       }
 
       .prepend-input + input {
-        margin-left: 0;
-        border-left: 0;
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
+        width: 100%;
+        padding-left: 40px;
+        margin-bottom: 10px;
       }
 
       code {
@@ -128,12 +140,14 @@
       }
 
       .wrapper {
+        position: relative;
         -webkit-user-select: none;
         user-select: none;
         border-radius: 10px;
         margin-top: 10px;
         border: 5px solid #f4f4f4;
         display: inline-block;
+        min-width: 250px;
       }
 
       .won .default-emoji,
@@ -166,7 +180,7 @@
         padding: 8px 10px 5px;
         display: table-cell;
         text-align: center;
-        font-family: "Exo 2", georgia;
+        font-family: "Exo 2", sans-serif;
       }
 
       .stat:after {
@@ -175,63 +189,107 @@
         margin-top: 5px;
         font-size: 0.7em;
         letter-spacing: 1px;
+        content: attr(title);
       }
 
-      #moves:after { content: "MOVES"; }
-      #bombs-left:after { content: "BOMBS"; }
-      #timer:after { content: "TIME"; }
-
-      .moves {
-        color: #e91e63;
+      .settings {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        top: -20px;
+        right: -20px;
+        background-color: #f4f4f4;
+        text-align: center;
+        border-radius: 25px;
+        padding: 2px 8px;
+        border: 5px solid #fff;
+        cursor: pointer;
+        z-index: 1;
       }
 
-      .time {
-        color: #03A9F4;
+      .settings .emoji {
+        width: 15px;
+        margin: 6px 0;
+      }
+
+      .settings-popup {
+        display: none;
+        position: absolute;
+        padding: 10px;
+        width: 100%;
+      }
+
+      .settings-popup button {
+        width: 100%;
+        margin: 0;
+      }
+
+      .settings-popup .flex-table {
+        margin-bottom: 10px;
+      }
+
+      .show {
+        display: block;
+      }
+
+      .settings-popup.show ~ * {
+        visibility: hidden;
       }
     </style>
   </head>
   <body>
-    <label class="btn"><input type="radio" name="emoji" id="twemoji" checked> Twemoji</label>
-    <label class="btn"><input type="radio" name="emoji" id="emoji"> Native emoji</label>
-    <br>
-
-    <input id="cols" class="input" type="number" value="10"> &times;
-    <input id="rows" class="input" type="number" value="10">
-    <div class="prepend-input">💣</div><input id="bombs" class="input" type="number" value="10">
-    <br>
     <div class="wrapper">
+      <button class="settings js-settings"></button>
+      <div class="js-settings-popup settings-popup">
+        <div class="flex-table">
+          <label class="btn flex-cell-min"><input type="radio" name="emoji" id="twemoji" checked> Twemoji</label>
+          <label class="btn flex-cell-min"><input type="radio" name="emoji" id="emoji"> Native emoji</label>
+        </div>
+        <div class="flex-table">
+          <input id="cols" class="input flex-cell" type="number" value="10">
+          <div class="flex-cell-min">&nbsp;&nbsp;&times;&nbsp;&nbsp;</div>
+          <input id="rows" class="input flex-cell" type="number" value="10"><br>
+        </div>
+        <div class="prepend-input">💣</div>
+        <input id="bombs" class="input" type="number" value="10">
+
+        <button class="js-popup-new-game btn">Restart Game</button>
+      </div>
       <a href="#" class="action-btn js-new-game">
         <span class="default-emoji"></span>
         <span id="result" class="result-emoji"></span>
       </a>
       <div id="map">
       </div>
-      <div class="bar">
-        <div id="bombs-left" class="stat">0</div>
-        <div id="moves" class="stat">0</div>
-        <div id="timer" class="stat">0</div>
+      <div class="bar flex-table">
+        <div title="BOMBS" id="bombs-left" class="stat flex-cell">0</div>
+        <div title="MOVES" id="moves" class="stat flex-cell">0</div>
+        <div title="TIME" id="timer" class="stat flex-cell">0</div>
       </div>
     </div>
     <br>
 
     <script>
-      var emojiset = ["🐣", "💣", "🚧", "◻️"]
+      var emojiset = ['🐣', '💣', '🚧', '◻️']
       var cols = document.getElementById('cols')
       var rows = document.getElementById('rows')
       var bombs = document.getElementById('bombs')
 
       game = new Game(cols.value, rows.value, bombs.value, emojiset, document.getElementById('twemoji').checked)
 
-      document.getElementById("twemoji").addEventListener("click", restart)
-      document.getElementById("emoji").addEventListener("click", restart)
-      document.querySelector(".js-new-game").addEventListener("click", function() {
-        clearInterval(game.timer)
-        game = new Game(cols.value, rows.value, bombs.value, emojiset, document.getElementById('twemoji').checked)
-        return false
+      document.querySelector('.js-new-game').addEventListener('click', restart)
+      document.querySelector('.js-popup-new-game').addEventListener('click', restart)
+
+      document.querySelector('.js-settings').addEventListener('click', function() {
+        var list = document.querySelector('.js-settings-popup').classList
+        list.contains('show') ? list.remove('show') : list.add('show')
       })
 
       function restart () {
-        game.restart(document.getElementById('twemoji').checked)
+        clearInterval(game.timer)
+        game = new Game(cols.value, rows.value, bombs.value, emojiset, document.getElementById('twemoji').checked)
+        document.querySelector('.js-settings-popup').classList.remove('show')
+        return false
       }
     </script>
   </body>

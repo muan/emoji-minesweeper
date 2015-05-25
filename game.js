@@ -141,6 +141,7 @@ Game.prototype.resetMetadata = function () {
   document.querySelector('.wrapper').classList.remove('won', 'lost')
   document.querySelector('.result-emoji').innerText = ''
   document.querySelector('.default-emoji').innerHTML = this.twemoji ? twemoji.parse('😀') : '😀'
+  document.querySelector('.js-settings').innerHTML = this.twemoji ? twemoji.parse('🔧') : '🔧'
 }
 
 Game.prototype.startTimer = function () {
