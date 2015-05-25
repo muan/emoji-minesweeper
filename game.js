@@ -49,7 +49,7 @@ Game.prototype.init = function () {
 
   if (this.twemoji) this.prepareTwemoji()
   this.bindEvents()
-  this.start_time = new Date()
+  this.startTime = new Date()
 }
 
 Game.prototype.bindEvents = function () {
@@ -58,7 +58,7 @@ Game.prototype.bindEvents = function () {
 
   this.map.addEventListener('mousedown', function() {
     that.moves++
-  });
+  })
 
   Array.prototype.forEach.call(cells, function (target) {
     // clicking on a cell and revealing cell
@@ -116,12 +116,12 @@ Game.prototype.game = function () {
   if (bombs.length > 0) {
     Array.prototype.forEach.call(masked, function (cell) { cell.reveal() })
     this.result = 'lost'
-    var seconds = (new Date() - this.start_time)/1000
+    var seconds = (new Date() - this.startTime)/1000
     this.showMessage(seconds)
   } else if (masked.length === this.number_of_bombs) {
     Array.prototype.forEach.call(masked, function (cell) { cell.reveal() })
     this.result = 'won'
-    var seconds = (new Date() - this.start_time)/1000
+    var seconds = (new Date() - this.startTime)/1000
     this.showMessage(seconds)
   }
 }
