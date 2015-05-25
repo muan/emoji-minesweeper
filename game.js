@@ -70,7 +70,7 @@ Game.prototype.bindEvents = function () {
         document.getElementsByClassName(targetClasses)[0].click()
         return
       }
-      
+
       target.reveal()
       if (target.isSpace) {
         var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neighbor) { return neighbor.isMasked })
@@ -83,8 +83,8 @@ Game.prototype.bindEvents = function () {
     target.addEventListener('dblclick', function () {
       if (target.isFlagged) return
       target.reveal()
-      var neightbors = Array.prototype.filter.call(document.querySelectorAll(target.neightbors), function (neightbor) { return neightbor.isMasked && !neightbor.isFlagged })
-      Array.prototype.forEach.call(neightbors, function triggerfriends (n) { setTimeout(function () { n.click() }, 5) })
+      var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neightbor) { return neightbor.isMasked && !neightbor.isFlagged })
+      Array.prototype.forEach.call(neighbors, function triggerfriends (n) { setTimeout(function () { n.click() }, 5) })
       that.game()
     })
 
