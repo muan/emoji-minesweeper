@@ -21,7 +21,7 @@
         padding: 20px 0;
       }
 
-      span, input, a, div {
+      span, input, a, div, select {
         box-sizing: border-box;
       }
 
@@ -100,7 +100,7 @@
         position: absolute;
       }
 
-      .prepend-input + input {
+      .prepend-input + input, select{
         width: 100%;
         padding-left: 40px;
         margin-bottom: 10px;
@@ -258,6 +258,29 @@
         </div>
         <div class="prepend-input">💣</div>
         <input id="bombs" class="input" type="number" value="10">
+
+        <select id="theme" onchange="_change(this);">
+            <option selected value="Normal">Normal🐣</option>
+            <option value="Flag">Flag🇺🇸</option>
+            <option value="Fruits">Fruits🍒</option>
+            <option value="Celebration">Celebration🎁</option>
+        </select>
+
+        <script>
+          function _change(el) {
+            var x = el.options[el.selectedIndex].value;
+            if(x === "Normal"){
+              emojiset = ['🐣', '💣', '🚧', '◻️']
+            } else if(x === "Flag") {
+              emojiset = ['🇺🇸','💥','🇬🇧','🔵']
+            } else if(x === "Fruits") {
+              emojiset = ['🍒','💫','📌','🍎']
+            } else if(x === "Celebration") {
+              emojiset = ['🍻','🎉','🎃','🎁']
+            }
+          };
+        </script>
+
 
         <button class="js-popup-new-game btn">Restart Game</button>
       </div>
