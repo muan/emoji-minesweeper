@@ -21,7 +21,7 @@
         padding: 20px 0;
       }
 
-      span, input, a, div, select {
+      span, input, a, div {
         box-sizing: border-box;
       }
 
@@ -99,8 +99,18 @@
         line-height: 1;
         position: absolute;
       }
+      .box {
+        -webkit-appearance: menulist-button;
+        height: 40px;
+      }
 
-      .prepend-input + input, select{
+      select {
+        width: 100%;
+        margin-bottom: 10px;
+        line-height: 100px;
+      }
+
+      .prepend-input + input{
         width: 100%;
         padding-left: 40px;
         margin-bottom: 10px;
@@ -259,7 +269,7 @@
         <div class="prepend-input">💣</div>
         <input id="bombs" class="input" type="number" value="10">
 
-        <select id="theme" onchange="_change(this);">
+        <select id="theme" onchange="_change(this);" class ="box">
             <option selected value="Normal">Normal🐣</option>
             <option value="Flag">Flag🇺🇸</option>
             <option value="Fruits">Fruits🍒</option>
@@ -267,6 +277,13 @@
         </select>
 
         <script>
+      $(document).ready(function() {
+        $(window).keydown(function(e) {
+          if(e.keyCode == 82) {
+            restart
+          }
+        });
+      });
           function _change(el) {
             var x = el.options[el.selectedIndex].value;
             if(x === "Normal"){
