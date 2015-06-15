@@ -175,7 +175,7 @@
       }
 
       .stat {
-      	width: 33.3%;
+        width: 33.3%;
         font-size: 0.85em;
         padding: 8px 10px 5px;
         display: table-cell;
@@ -252,12 +252,12 @@
           <label class="btn flex-cell-min"><input type="radio" name="emoji" id="emoji"> Native emoji</label>
         </div>
         <div class="flex-table">
-          <input id="cols" class="input flex-cell" type="number" value="10">
+          <input id="cols" class="input flex-cell" type="number" value="10" min='1'>
           <div class="flex-cell-min divider">&times;</div>
-          <input id="rows" class="input flex-cell" type="number" value="10"><br>
+          <input id="rows" class="input flex-cell" type="number" value="10" min='1'><br>
         </div>
         <div class="prepend-input">💣</div>
-        <input id="bombs" class="input" type="number" value="10">
+        <input id="bombs" class="input" type="number" value="10" min='1'>
 
         <button class="js-popup-new-game btn">Restart Game</button>
       </div>
