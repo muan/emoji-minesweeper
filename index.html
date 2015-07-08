@@ -3,8 +3,8 @@
   <head>
     <title>💥</title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
-    <link href='http://fonts.googleapis.com/css?family=Exo+2' rel='stylesheet' type='text/css'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="http://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet" type="text/css">
 
     <!-- 👋 this is a wip don't be mean -->
     <!-- check out https://github.com/muan/emoji-minesweeper -->
@@ -175,7 +175,7 @@
       }
 
       .stat {
-      	width: 33.3%;
+        width: 33.3%;
         font-size: 0.85em;
         padding: 8px 10px 5px;
         display: table-cell;
@@ -252,12 +252,12 @@
           <label class="btn flex-cell-min"><input type="radio" name="emoji" id="emoji"> Native emoji</label>
         </div>
         <div class="flex-table">
-          <input id="cols" class="input flex-cell" type="number" value="10">
+          <input id="cols" class="input flex-cell" type="number" value="10" min="1" max="500">
           <div class="flex-cell-min divider">&times;</div>
-          <input id="rows" class="input flex-cell" type="number" value="10"><br>
+          <input id="rows" class="input flex-cell" type="number" value="10" min="1" max="500"><br>
         </div>
         <div class="prepend-input">💣</div>
-        <input id="bombs" class="input" type="number" value="10">
+        <input id="bombs" class="input" type="number" value="10" min="1" max="500">
 
         <button class="js-popup-new-game btn">Restart Game</button>
       </div>
