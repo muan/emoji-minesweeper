@@ -105,6 +105,12 @@ Game.prototype.bindEvents = function () {
       that.updateBombsLeft()
     })
   })
+
+  window.addEventListener('keydown', function (evt) {
+    if (evt.key == 'r' || evt.which == 'R'.charCodeAt()) {
+      that.restart(that.twemoji)
+    }
+  })
 }
 
 Game.prototype.game = function () {
