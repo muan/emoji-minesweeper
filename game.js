@@ -137,9 +137,9 @@ Game.prototype.restart = function (twemoji) {
 }
 
 Game.prototype.resetMetadata = function () {
-  document.getElementById('timer').innerText = '0.00'
+  document.getElementById('timer').textContent = '0.00'
   document.querySelector('.wrapper').classList.remove('won', 'lost')
-  document.querySelector('.result-emoji').innerText = ''
+  document.querySelector('.result-emoji').textContent = ''
   document.querySelector('.default-emoji').innerHTML = this.twemoji ? twemoji.parse('😀') : '😀'
   document.querySelector('.js-settings').innerHTML = this.twemoji ? twemoji.parse('🔧') : '🔧'
 }
@@ -148,7 +148,7 @@ Game.prototype.startTimer = function () {
   if (this.timer) return
   this.startTime = new Date()
   this.timer = setInterval(function () {
-    document.getElementById('timer').innerText = ((new Date() - game.startTime) / 1000).toFixed(2)
+    document.getElementById('timer').textContent = ((new Date() - game.startTime) / 1000).toFixed(2)
   }, 100)
 }
 
@@ -202,12 +202,12 @@ Game.prototype.shuffle = function (array) {
 
 Game.prototype.moveIt = function (zero) {
   zero ? this.moves = 0 : this.moves++
-  document.getElementById('moves').innerText = this.moves
+  document.getElementById('moves').textContent = this.moves
 }
 
 Game.prototype.updateBombsLeft = function () {
   var flagged = Array.prototype.filter.call(document.getElementsByClassName('cell'), function (target) { return target.isFlagged })
-  document.getElementById('bombs-left').innerText = this.number_of_bombs - flagged.length
+  document.getElementById('bombs-left').textContent = this.number_of_bombs - flagged.length
 }
 
 Game.prototype.showMessage = function () {
@@ -216,7 +216,7 @@ Game.prototype.showMessage = function () {
   var winner = this.result === 'won'
   var emoji = winner ? '😎' : '😵'
   document.querySelector('.wrapper').classList.add(this.result)
-  document.getElementById('timer').innerText = seconds
+  document.getElementById('timer').textContent = seconds
   document.getElementById('result').innerHTML = this.twemoji ? twemoji.parse(emoji) : emoji
 }
 
