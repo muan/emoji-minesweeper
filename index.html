@@ -99,8 +99,18 @@
         line-height: 1;
         position: absolute;
       }
+      .box {
+        -webkit-appearance: menulist-button;
+        height: 40px;
+      }
 
-      .prepend-input + input {
+      select {
+        width: 100%;
+        margin-bottom: 10px;
+        line-height: 100px;
+      }
+
+      .prepend-input + input{
         width: 100%;
         padding-left: 40px;
         margin-bottom: 10px;
@@ -258,6 +268,36 @@
         </div>
         <div class="prepend-input">💣</div>
         <input id="bombs" class="input" type="number" value="10" min="1" max="500">
+
+        <select id="theme" onchange="_change(this);" class ="box">
+            <option selected value="Normal">Normal🐣</option>
+            <option value="Flag">Flag🇺🇸</option>
+            <option value="Fruits">Fruits🍒</option>
+            <option value="Celebration">Celebration🎁</option>
+        </select>
+
+        <script>
+      $(document).ready(function() {
+        $(window).keydown(function(e) {
+          if(e.keyCode == 82) {
+            restart
+          }
+        });
+      });
+          function _change(el) {
+            var x = el.options[el.selectedIndex].value;
+            if(x === "Normal"){
+              emojiset = ['🐣', '💣', '🚧', '◻️']
+            } else if(x === "Flag") {
+              emojiset = ['🇺🇸','💥','🇬🇧','🔵']
+            } else if(x === "Fruits") {
+              emojiset = ['🍒','💫','📌','🍎']
+            } else if(x === "Celebration") {
+              emojiset = ['🍻','🎉','🎃','🎁']
+            }
+          };
+        </script>
+
 
         <button class="js-popup-new-game btn">Restart Game</button>
       </div>
