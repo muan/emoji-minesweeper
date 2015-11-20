@@ -92,6 +92,15 @@
         border: 1px solid #e0e0e0;
       }
 
+      .input-select {
+        width: 100%;
+        height: 40px;
+        padding: 12px;
+        font-size: 1em;
+        margin-bottom: 10px;
+        background: transparent;
+      }
+
       .prepend-input {
         padding: 7px 0 6px 10px;
         margin: 5px 0;
@@ -258,7 +267,12 @@
         </div>
         <div class="prepend-input">💣</div>
         <input id="bombs" class="input" type="number" value="10" min="1" max="500">
-
+        <select id="emojiset" class="input input-select">
+          <option value="🐣 💣 🚧 ◻️">🐣 💣 🚧</option>
+          <option value="🍰 👾 📌 ◻️">🍰 👾 📌</option>
+          <option value="🌷 ⚡️ 🐞 ◻️">🌷 ⚡️ 🐞</option>
+          <option value="⭕️ ❌ ❗️ ◻️">⭕️ ❌ ❗️</option>
+        </select>
         <button class="js-popup-new-game btn">Restart Game</button>
       </div>
       <a href="#" class="action-btn js-new-game">
@@ -276,7 +290,7 @@
     <br>
 
     <script>
-      var emojiset = ['🐣', '💣', '🚧', '◻️']
+      var emojiset = document.getElementById('emojiset').value.split(' ')
       var cols = document.getElementById('cols')
       var rows = document.getElementById('rows')
       var bombs = document.getElementById('bombs')
@@ -293,6 +307,7 @@
 
       function restart () {
         clearInterval(game.timer)
+        emojiset = document.getElementById('emojiset').value.split(' ')
         game = new Game(cols.value, rows.value, bombs.value, emojiset, document.getElementById('twemoji').checked)
         document.querySelector('.js-settings-popup').classList.remove('show')
         return false
