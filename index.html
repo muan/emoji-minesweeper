@@ -189,7 +189,6 @@
         padding: 8px 10px 5px;
         display: table-cell;
         text-align: center;
-        font-family: "Exo 2", sans-serif;
       }
 
       .stat:after {
@@ -250,6 +249,19 @@
         color: #999;
         font-size: 0.65em;
       }
+
+      .stat,
+      .link-to-github {
+        font-family: "Exo 2", sans-serif;
+      }
+
+      .link-to-github {
+        margin: 40px auto;
+        display: block;
+        font-size: 12px;
+        color: #08c;
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
@@ -287,7 +299,7 @@
         <div title="TIME" id="timer" class="stat flex-cell">0</div>
       </div>
     </div>
-    <br>
+    <a href="https://github.com/muan/emoji-minesweeper" class="link-to-github">[Code]</a>
 
     <script>
       var emojiset = document.getElementById('emojiset').value.split(' ')
