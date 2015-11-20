@@ -23,7 +23,6 @@ new Game(16, 16, 30, ["🐱", "📛", "💣", "🔍"], false)
 
 ### Todos
 
-- Emoji Minesweeper Themes
 - Mobile!
 
 ### Zap :zap:
