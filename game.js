@@ -10,7 +10,6 @@ var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
   this.number_of_bombs = Number(number_of_bombs)
   this.rate = number_of_bombs / this.number_of_cells
   this.numbermoji = [this.emojiset[0], '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣']
-
   this.init()
 }
 
@@ -148,6 +147,9 @@ Game.prototype.resetMetadata = function () {
   document.querySelector('.result-emoji').textContent = ''
   document.querySelector('.default-emoji').innerHTML = this.twemoji ? twemoji.parse('😀') : '😀'
   document.querySelector('.js-settings').innerHTML = this.twemoji ? twemoji.parse('🔧') : '🔧'
+  document.querySelector('.js-leaderboard').innerHTML = this.twemoji ? twemoji.parse('🏆') : '🏆'
+  document.getElementsByClassName('hurray')[0].innerHTML = this.twemoji ? twemoji.parse('🎊') : '🎊'
+  document.getElementsByClassName('hurray')[1].innerHTML = this.twemoji ? twemoji.parse('🎊') : '🎊'
 }
 
 Game.prototype.startTimer = function () {
@@ -224,6 +226,11 @@ Game.prototype.showMessage = function () {
   document.querySelector('.wrapper').classList.add(this.result)
   document.getElementById('timer').textContent = seconds
   document.getElementById('result').innerHTML = this.twemoji ? twemoji.parse(emoji) : emoji
+   
+  if(winner){
+    //if the player won check if his score gets into the leaderboard
+    leaderboard.checkScore(this.moves, seconds)
+  }
 }
 
 // console documentation

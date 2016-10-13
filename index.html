@@ -12,6 +12,7 @@
     <!-- haiiii https://github.com/twitter/twemoji is awesome -->
     <script src="http://twemoji.maxcdn.com/twemoji.min.js"></script>
     <script src="game.js"></script>
+    <script src="leaderboard.js"></script>
 
     <style type="text/css">
       body {
@@ -159,6 +160,12 @@
         display: inline-block;
         min-width: 250px;
       }
+      #high-scores-title{
+        text-align: center;
+        font-family: 'Exo 2', sans-serif;
+        font-size: 21px;
+        font-weight: bold;
+      }
 
       .won .default-emoji,
       .lost .default-emoji {
@@ -172,6 +179,17 @@
 
       .lost {
         box-shadow: 0 0 1px #f00;
+      }
+      #scores{
+        margin-top:10px;
+      }
+      .score{
+        width: 100%;
+        font-size: 1rem;
+        text-align: center;
+        font-family: 'Exo 2', sans-serif;
+        margin: 0;
+        margin-bottom: 5px;
       }
 
       .won {
@@ -200,13 +218,10 @@
         letter-spacing: 1px;
         content: attr(title);
       }
-
-      .settings {
+      .menubuttons{
         position: absolute;
         width: 40px;
         height: 40px;
-        top: -20px;
-        right: -20px;
         background-color: #f4f4f4;
         text-align: center;
         border-radius: 25px;
@@ -214,19 +229,68 @@
         border: 5px solid #fff;
         cursor: pointer;
         z-index: 1;
+        top: -20px;
       }
-
+      .leaderboard{
+       left: -20px;
+      }
+      #settings-wrap{
+        width:220px;
+      }
+      .settings {
+        right: -20px;
+      }
+      .leaderboard .emoji{
+       width : 15px;
+       margin : 6px 0;
+      }
       .settings .emoji {
         width: 15px;
         margin: 6px 0;
       }
-
-      .settings-popup {
-        display: none;
-        position: absolute;
+      .popup{
+        position: relative;
         padding: 10px;
         width: 100%;
       }
+      .left{
+        float:left;
+      }
+      .leaderboard-popup{
+        display: none;
+      }
+      .hurray{
+        width: 2%;
+        height: 35px;
+      }
+      .highscore-tite{
+        width: 74%;
+        margin-left: 12%;
+      }
+      .hurray .emoji{
+        width: 10%;
+        position: absolute;
+      }
+
+      .overlay-popup{
+        display:none;
+        font-family: 'Exo 2', sans-serif;
+        width: 100%;
+        margin-top: 30%;
+        position: absolute;
+        background-color: white;
+        z-index: 1;
+        border: 3px solid #f4f4f4;
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 22px;
+      }
+
+      .settings-popup {
+        display: none;
+      }
+
+      leaderboard-popup
 
       .settings-popup button {
         width: 100%;
@@ -242,7 +306,10 @@
       }
 
       .settings-popup.show ~ * {
-        visibility: hidden;
+        display: none;
+      }
+      .leaderboard-popup.show ~ * {
+        display: none;
       }
 
       .divider {
@@ -267,8 +334,10 @@
   </head>
   <body>
     <div class="wrapper">
-      <button class="settings js-settings"></button>
-      <div class="js-settings-popup settings-popup">
+      <button class="settings js-settings menubuttons"></button>
+      <button class="leaderboard js-leaderboard menubuttons"></button>
+      <div class="js-settings-popup settings-popup popup">
+        <div id="settings-wrap">
         <div class="flex-table">
           <label class="btn flex-cell-min"><input type="radio" name="emoji" id="twemoji" checked> Twemoji</label>
           <label class="btn flex-cell-min"><input type="radio" name="emoji" id="emoji"> Native emoji</label>
@@ -288,6 +357,16 @@
           <option value="☀ ⚡ ☔ ☁️">☀ ⚡ ☔ ☁️</option>
         </select>
         <button class="js-popup-new-game btn">Restart Game</button>
+        </div>
+      </div>
+      <div class="js-leaderboard-popup leaderboard-popup popup">
+        <p id="high-scores-title">High Scores</p>
+        <div id="scores"></div>
+      </div>
+      <div id="highscore-popup" class="overlay-popup">
+        <div class="hurray left"></div>
+        <div class="highscore-tite left">New High Score!</div>
+        <div class="hurray left"></div>
       </div>
       <a href="#" class="action-btn js-new-game">
         <span class="default-emoji"></span>
@@ -310,14 +389,37 @@
       var bombs = document.getElementById('bombs')
 
       game = new Game(cols.value, rows.value, bombs.value, emojiset, document.getElementById('twemoji').checked)
+      leaderboard = new Leaderboard()
+      //initializes highscores on first load only
+      leaderboard.initScores()
 
       document.querySelector('.js-new-game').addEventListener('click', restart)
       document.querySelector('.js-popup-new-game').addEventListener('click', restart)
 
       document.querySelector('.js-settings').addEventListener('click', function() {
-        var list = document.querySelector('.js-settings-popup').classList
-        list.contains('show') ? list.remove('show') : list.add('show')
+       openPopup("settings")
+       //sends the type of popup that needs to be opened
       })
+      
+      document.querySelector('.js-leaderboard').addEventListener('click', function(){
+       openPopup("leaderboard")
+      })
+      function openPopup(clicked){
+        //gets all class lists and hides the unwanted popups and shows the wanted one
+        var settingsList = document.querySelector('.js-settings-popup').classList, leaderboardList = document.querySelector('.js-leaderboard-popup').classList 
+        switch(clicked){
+          case "settings":
+          settingsList.contains('show') ? settingsList.remove('show') : settingsList.add('show')
+          if(leaderboardList.contains('show')) leaderboardList.remove('show') 
+           break;
+          case "leaderboard":
+          leaderboardList.contains('show') ? leaderboardList.remove('show') : leaderboardList.add('show')
+          if(settingsList.contains('show')) settingsList.remove('show') 
+           break;
+          default:
+          break;
+        }
+      }
 
       function restart () {
         clearInterval(game.timer)
