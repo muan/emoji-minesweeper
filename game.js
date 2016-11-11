@@ -1,21 +1,25 @@
 /* global twemoji, alert, MouseEvent, game */
+const numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣']
 
-var Game = function (cols, rows, number_of_bombs, emojiset, twemoji) {
+var Game = function (cols, rows, number_of_bombs, set, usetwemoji) {
   this.number_of_cells = cols * rows
-  this.twemoji = twemoji || false
-  this.emojiset = emojiset
   this.map = document.getElementById('map')
   this.cols = Number(cols)
   this.rows = Number(rows)
   this.number_of_bombs = Number(number_of_bombs)
   this.rate = number_of_bombs / this.number_of_cells
-  this.numbermoji = [this.emojiset[0], '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣']
+
+  this.emojiset = set
+  this.numbermoji = [this.emojiset[0]].concat(numbers)
+  this.usetwemoji = usetwemoji || false
 
   this.init()
 }
 
 Game.prototype.init = function () {
-  if (this.number_of_cells > 500) { alert('too big, go away'); return false }
+  this.prepareEmoji()
+
+  // if (this.number_of_cells > 500) { alert('too big, go away'); return false }
   if (this.number_of_cells <= this.number_of_bombs) { alert('too many bombs, are you drunk?'); return false }
   var that = this
   this.moveIt(true)
@@ -44,9 +48,6 @@ Game.prototype.init = function () {
     if (count === 0) obj.isSpace = true
     obj.mine_count = count
   }
-
-  if (this.twemoji) this.prepareTwemoji()
-
   this.resetMetadata()
   this.bindEvents()
   this.updateBombsLeft()
@@ -64,7 +65,7 @@ Game.prototype.bindEvents = function () {
         that.startTimer()
 
         if (target.isBomb) {
-          that.restart(that.twemoji)
+          that.restart(that.usetwemoji)
           var targetClasses = target.className.replace('unmasked', '')
           document.getElementsByClassName(targetClasses)[0].click()
           return
@@ -93,22 +94,25 @@ Game.prototype.bindEvents = function () {
 
     // marking a cell as a potential bomb
     target.addEventListener('contextmenu', function (evt) {
+      var emoji
       evt.preventDefault()
       if (!target.isMasked) { return }
       if (target.isFlagged) {
-        target.innerHTML = that.twemoji ? twemoji.parse(that.emojiset[3]) : that.emojiset[3]
+        emoji = that.emojiset[3]
         target.isFlagged = false
       } else {
-        target.innerHTML = that.twemoji ? twemoji.parse(that.emojiset[2]) : that.emojiset[2]
+        emoji = that.emojiset[2]
         target.isFlagged = true
       }
+      target.childNodes[0].remove()
+      target.appendChild(emoji.cloneNode())
       that.updateBombsLeft()
     })
   })
 
   window.addEventListener('keydown', function (evt) {
     if (evt.key == 'r' || evt.which == 'R'.charCodeAt()) {
-      that.restart(that.twemoji)
+      that.restart(usetwemoji)
     }
   })
 }
@@ -134,11 +138,11 @@ Game.prototype.game = function () {
   }
 }
 
-Game.prototype.restart = function (twemoji) {
+Game.prototype.restart = function (usetwemoji) {
   clearInterval(this.timer)
   this.result = false
   this.timer = false
-  this.twemoji = twemoji
+  this.usetwemoji = usetwemoji
   this.init()
 }
 
@@ -146,8 +150,8 @@ Game.prototype.resetMetadata = function () {
   document.getElementById('timer').textContent = '0.00'
   document.querySelector('.wrapper').classList.remove('won', 'lost')
   document.querySelector('.result-emoji').textContent = ''
-  document.querySelector('.default-emoji').innerHTML = this.twemoji ? twemoji.parse('😀') : '😀'
-  document.querySelector('.js-settings').innerHTML = this.twemoji ? twemoji.parse('🔧') : '🔧'
+  document.querySelector('.default-emoji').innerHTML = this.usetwemoji ? twemoji.parse('😀') : '😀'
+  document.querySelector('.js-settings').innerHTML = this.usetwemoji ? twemoji.parse('🔧') : '🔧'
 }
 
 Game.prototype.startTimer = function () {
@@ -162,24 +166,35 @@ Game.prototype.mine = function (bomb) {
   var that = this
   var base = document.createElement('span')
   base.className = 'cell'
-  base.innerHTML = this.twemoji ? twemoji.parse(this.emojiset[3]) : this.emojiset[3]
+  base.appendChild(this.emojiset[3].cloneNode())
   base.isMasked = true
   if (bomb) base.isBomb = true
   base.reveal = function (won) {
     var bombemoji = won ? that.emojiset[2] : that.emojiset[1]
-    var emoji = this.isBomb ? bombemoji : that.numbermoji[this.mine_count]
-    this.innerHTML = that.twemoji ? twemoji.parse(emoji) : emoji
+    var emoji = base.isBomb ? bombemoji : that.numbermoji[base.mine_count]
+    this.childNodes[0].remove()
+    this.appendChild(emoji.cloneNode())
     this.isMasked = false
     this.classList.add('unmasked')
   }
   return base
 }
 
-Game.prototype.prepareTwemoji = function () {
-  this.emojiset.concat(this.numbermoji).forEach(function (emoji) {
-    var image = document.createElement('img')
-    image.src = twemoji.parse(emoji).match(/src=\"(.+)\">/)[1]
-  })
+Game.prototype.prepareEmoji = function () {
+  var that = this
+  function makeEmojiElement (emoji) {
+    var ele
+    if(that.usetwemoji) {
+      ele = document.createElement('img')
+      ele.src = twemoji.parse(emoji).match(/src=\"(.+)\">/)[1]
+    } else {
+      ele = document.createTextNode(emoji.alt || emoji)
+    }
+    return ele
+  }
+
+  this.emojiset = this.emojiset.map(makeEmojiElement)
+  this.numbermoji = this.numbermoji.map(makeEmojiElement)
 }
 
 Game.prototype.bomb_array = function () {
@@ -223,7 +238,7 @@ Game.prototype.showMessage = function () {
   var emoji = winner ? '😎' : '😵'
   document.querySelector('.wrapper').classList.add(this.result)
   document.getElementById('timer').textContent = seconds
-  document.getElementById('result').innerHTML = this.twemoji ? twemoji.parse(emoji) : emoji
+  document.getElementById('result').innerHTML = this.usetwemoji ? twemoji.parse(emoji) : emoji
 }
 
 // console documentation
