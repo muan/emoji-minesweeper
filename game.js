@@ -24,10 +24,17 @@ Game.prototype.init = function () {
   var that = this
   this.moveIt(true)
   this.map.innerHTML = ''
-  this.bomb_array().forEach(function (a, i) {
-    var mine = that.mine(a)
+  var grid_data = this.bomb_array()
+  grid_data.forEach(function (isBomb, i) {
+    var mine = that.mine(isBomb)
     var x_cord = Math.floor((i + 1) % that.cols) || that.cols
     var y_cord = Math.ceil((i + 1) / that.cols)
+    if(!isBomb) {
+      var neighbors = [grid_data[i - 1], grid_data[i + 1],
+                       grid_data[i + that.cols - 1], grid_data[i + that.cols], grid_data[i + that.cols + 1],
+                       grid_data[i - that.cols - 1], grid_data[i - that.cols], grid_data[i - that.cols + 1]]
+      mine.mine_count = neighbors.filter(function (neighbor_bomb) { return neighbor_bomb }).length
+    }
     mine.classList.add('x' + x_cord, 'y' + y_cord)
     mine.neighbors = [('.x' + x_cord + '.y' + (y_cord + 1)), ('.x' + x_cord + '.y' + (y_cord - 1)),
                       ('.x' + (x_cord + 1) + '.y' + (y_cord + 1)), ('.x' + (x_cord + 1) + '.y' + (y_cord - 1)), ('.x' + (x_cord + 1) + '.y' + y_cord),
@@ -37,17 +44,6 @@ Game.prototype.init = function () {
     if (x_cord === that.cols) that.map.appendChild(document.createElement('br'))
   })
 
-  var cells = document.querySelectorAll('.cell')
-  for (var i = 0; i < cells.length; i++) {
-    var obj = cells[i]
-    if (obj.isBomb) continue
-    var count = 0
-    Array.prototype.forEach.call(document.querySelectorAll(obj.neighbors), function (n) {
-      if (n.isBomb) count++
-    })
-    if (count === 0) obj.isSpace = true
-    obj.mine_count = count
-  }
   this.resetMetadata()
   this.bindEvents()
   this.updateBombsLeft()
@@ -74,20 +70,20 @@ Game.prototype.bindEvents = function () {
       if (evt.view) that.moveIt()
 
       target.reveal()
-      if (target.isSpace) {
+      if (target.mine_count === 0 && !target.isBomb) {
         var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neighbor) { return neighbor.isMasked })
         Array.prototype.forEach.call(neighbors, function triggerfriends (n) { setTimeout(function () { n.dispatchEvent(new MouseEvent('click')) }, 5) })
       }
       that.game()
     })
 
-    // double clicking on a cell and opening the cell and all 8 of its neightbors
+    // double clicking on a cell and opening the cell and all 8 of its neighbors
     target.addEventListener('dblclick', function () {
       if (target.isFlagged) return
       that.moveIt()
 
       target.reveal()
-      var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neightbor) { return neightbor.isMasked && !neightbor.isFlagged })
+      var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neighbor) { return neighbor.isMasked && !neighbor.isFlagged })
       Array.prototype.forEach.call(neighbors, function triggerfriends (n) { setTimeout(function () { n.dispatchEvent(new MouseEvent('click')) }, 5) })
       that.game()
     })
@@ -98,14 +94,14 @@ Game.prototype.bindEvents = function () {
       evt.preventDefault()
       if (!target.isMasked) { return }
       if (target.isFlagged) {
-        emoji = that.emojiset[3]
+        emoji = that.emojiset[3].cloneNode()
         target.isFlagged = false
       } else {
-        emoji = that.emojiset[2]
+        emoji = that.emojiset[2].cloneNode()
         target.isFlagged = true
       }
       target.childNodes[0].remove()
-      target.appendChild(emoji.cloneNode())
+      target.appendChild(emoji)
       that.updateBombsLeft()
     })
   })
@@ -185,10 +181,15 @@ Game.prototype.prepareEmoji = function () {
   function makeEmojiElement (emoji) {
     var ele
     if(that.usetwemoji) {
-      ele = document.createElement('img')
-      ele.src = twemoji.parse(emoji).match(/src=\"(.+)\">/)[1]
+      if (emoji.alt) {
+        ele = emoji
+      } else {
+        ele = document.createElement('img')
+        ele.className = 'emoji'
+        ele.src = twemoji.parse(emoji).match(/src=\"(.+)\">/)[1]
+      }
     } else {
-      ele = document.createTextNode(emoji.alt || emoji)
+      ele = document.createTextNode(emoji.alt || emoji.data || emoji)
     }
     return ele
   }
