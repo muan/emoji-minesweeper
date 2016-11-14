@@ -70,9 +70,22 @@ Game.prototype.bindEvents = function () {
       if (evt.view) that.moveIt()
 
       target.reveal()
+
+      function revealNeighbors (n) {
+        var neighbors = document.querySelectorAll(n.neighbors)
+        for(var i = 0; i < neighbors.length; i++) {
+          if (neighbors[i].isMasked) {
+            neighbors[i].reveal()
+
+            if (neighbors[i].mine_count === 0 && !neighbors[i].isBomb) {
+              revealNeighbors(neighbors[i])
+            }
+          }
+        }
+      }
+
       if (target.mine_count === 0 && !target.isBomb) {
-        var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neighbor) { return neighbor.isMasked })
-        Array.prototype.forEach.call(neighbors, function triggerfriends (n) { setTimeout(function () { n.dispatchEvent(new MouseEvent('click')) }, 5) })
+        revealNeighbors(target)
       }
       that.game()
     })
