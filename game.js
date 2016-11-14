@@ -19,8 +19,8 @@ var Game = function (cols, rows, number_of_bombs, set, usetwemoji) {
 Game.prototype.init = function () {
   this.prepareEmoji()
 
-  // if (this.number_of_cells > 500) { alert('too big, go away'); return false }
-  if (this.number_of_cells <= this.number_of_bombs) { alert('too many bombs, are you drunk?'); return false }
+  if (this.number_of_cells > 2500) { alert('too big, go away, have less than 2500 cells'); return false }
+  if (this.number_of_cells <= this.number_of_bombs) { alert('more bombs than cells, can\'t do it'); return false }
   var that = this
   this.moveIt(true)
   this.map.innerHTML = ''
