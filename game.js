@@ -77,21 +77,8 @@ Game.prototype.bindEvents = function () {
 
       target.reveal()
 
-      function revealNeighbors (n) {
-        var neighbors = document.querySelectorAll(n.neighbors)
-        for(var i = 0; i < neighbors.length; i++) {
-          if (neighbors[i].isMasked) {
-            neighbors[i].reveal()
-
-            if (neighbors[i].mine_count === 0 && !neighbors[i].isBomb) {
-              revealNeighbors(neighbors[i])
-            }
-          }
-        }
-      }
-
       if (target.mine_count === 0 && !target.isBomb) {
-        revealNeighbors(target)
+        that.revealNeighbors(target)
       }
       that.game()
     })
@@ -102,8 +89,7 @@ Game.prototype.bindEvents = function () {
       that.moveIt()
 
       target.reveal()
-      var neighbors = Array.prototype.filter.call(document.querySelectorAll(target.neighbors), function (neighbor) { return neighbor.isMasked && !neighbor.isFlagged })
-      Array.prototype.forEach.call(neighbors, function triggerfriends (n) { setTimeout(function () { n.dispatchEvent(new MouseEvent('click')) }, 5) })
+      that.revealNeighbors(target)
       that.game()
     })
 
@@ -193,6 +179,19 @@ Game.prototype.mine = function (bomb) {
     this.classList.add('unmasked')
   }
   return base
+}
+
+Game.prototype.revealNeighbors = function (mine) {
+  var neighbors = document.querySelectorAll(mine.neighbors)
+  for(var i = 0; i < neighbors.length; i++) {
+    if (neighbors[i].isMasked && !neighbors[i].isFlagged) {
+      neighbors[i].reveal()
+
+      if (neighbors[i].mine_count === 0 && !neighbors[i].isBomb) {
+        this.revealNeighbors(neighbors[i])
+      }
+    }
+  }
 }
 
 Game.prototype.prepareEmoji = function () {
