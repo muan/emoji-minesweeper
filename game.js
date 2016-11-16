@@ -25,23 +25,29 @@ Game.prototype.init = function () {
   this.moveIt(true)
   this.map.innerHTML = ''
   var grid_data = this.bomb_array()
+  function getIndex (x, y) {
+    if (x > that.cols || x <= 0) return -1
+    if (y > that.cols || y <= 0) return -1
+    return that.cols * (y - 1 ) + x - 1
+  }
+
   grid_data.forEach(function (isBomb, i) {
     var mine = that.mine(isBomb)
-    var x_cord = Math.floor((i + 1) % that.cols) || that.cols
-    var y_cord = Math.ceil((i + 1) / that.cols)
+    var x = Math.floor((i + 1) % that.cols) || that.cols
+    var y = Math.ceil((i + 1) / that.cols)
     if(!isBomb) {
-      var neighbors = [grid_data[i - 1], grid_data[i + 1],
-                       grid_data[i + that.cols - 1], grid_data[i + that.cols], grid_data[i + that.cols + 1],
-                       grid_data[i - that.cols - 1], grid_data[i - that.cols], grid_data[i - that.cols + 1]]
+      var neighbors = [grid_data[getIndex(x, y - 1)], grid_data[getIndex(x, y + 1)],
+                       grid_data[getIndex(x - 1 , y - 1)], grid_data[getIndex(x - 1 , y)], grid_data[getIndex(x - 1 , y + 1)],
+                       grid_data[getIndex(x + 1 , y - 1)], grid_data[getIndex(x + 1 , y)], grid_data[getIndex(x + 1 , y + 1)]]
       mine.mine_count = neighbors.filter(function (neighbor_bomb) { return neighbor_bomb }).length
     }
-    mine.classList.add('x' + x_cord, 'y' + y_cord)
-    mine.neighbors = [('.x' + x_cord + '.y' + (y_cord + 1)), ('.x' + x_cord + '.y' + (y_cord - 1)),
-                      ('.x' + (x_cord + 1) + '.y' + (y_cord + 1)), ('.x' + (x_cord + 1) + '.y' + (y_cord - 1)), ('.x' + (x_cord + 1) + '.y' + y_cord),
-                      ('.x' + (x_cord - 1) + '.y' + (y_cord + 1)), ('.x' + (x_cord - 1) + '.y' + (y_cord - 1)), ('.x' + (x_cord - 1) + '.y' + y_cord)]
+    mine.classList.add('x' + x, 'y' + y)
+    mine.neighbors = [('.x' + x + '.y' + (y + 1)), ('.x' + x + '.y' + (y - 1)),
+                      ('.x' + (x + 1) + '.y' + (y + 1)), ('.x' + (x + 1) + '.y' + (y - 1)), ('.x' + (x + 1) + '.y' + y),
+                      ('.x' + (x - 1) + '.y' + (y + 1)), ('.x' + (x - 1) + '.y' + (y - 1)), ('.x' + (x - 1) + '.y' + y)]
 
     that.map.appendChild(mine)
-    if (x_cord === that.cols) that.map.appendChild(document.createElement('br'))
+    if (x === that.cols) that.map.appendChild(document.createElement('br'))
   })
 
   this.resetMetadata()
