@@ -25,6 +25,7 @@ Game.prototype.init = function () {
   this.moveIt(true)
   this.map.innerHTML = ''
   var grid_data = this.bomb_array()
+
   function getIndex (x, y) {
     if (x > that.cols || x <= 0) return -1
     if (y > that.cols || y <= 0) return -1
@@ -35,16 +36,13 @@ Game.prototype.init = function () {
     var mine = that.mine(isBomb)
     var x = Math.floor((i + 1) % that.cols) || that.cols
     var y = Math.ceil((i + 1) / that.cols)
+    var neighbors_cords = [[x, y - 1], [x, y + 1], [x - 1, y - 1], [x - 1, y], [x - 1, y + 1], [x + 1, y - 1], [x + 1, y], [x + 1, y + 1]]
     if(!isBomb) {
-      var neighbors = [grid_data[getIndex(x, y - 1)], grid_data[getIndex(x, y + 1)],
-                       grid_data[getIndex(x - 1 , y - 1)], grid_data[getIndex(x - 1 , y)], grid_data[getIndex(x - 1 , y + 1)],
-                       grid_data[getIndex(x + 1 , y - 1)], grid_data[getIndex(x + 1 , y)], grid_data[getIndex(x + 1 , y + 1)]]
+      var neighbors = neighbors_cords.map(function (xy) { return grid_data[getIndex(xy[0], xy[1])] })
       mine.mine_count = neighbors.filter(function (neighbor_bomb) { return neighbor_bomb }).length
     }
     mine.classList.add('x' + x, 'y' + y)
-    mine.neighbors = [('.x' + x + '.y' + (y + 1)), ('.x' + x + '.y' + (y - 1)),
-                      ('.x' + (x + 1) + '.y' + (y + 1)), ('.x' + (x + 1) + '.y' + (y - 1)), ('.x' + (x + 1) + '.y' + y),
-                      ('.x' + (x - 1) + '.y' + (y + 1)), ('.x' + (x - 1) + '.y' + (y - 1)), ('.x' + (x - 1) + '.y' + y)]
+    mine.neighbors = neighbors_cords.map(function (xy) { return `.x${xy[0]}.y${xy[1]}` })
 
     that.map.appendChild(mine)
     if (x === that.cols) that.map.appendChild(document.createElement('br'))
