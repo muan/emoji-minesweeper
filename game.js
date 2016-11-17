@@ -1,5 +1,6 @@
 /* global twemoji, alert, MouseEvent, game */
 const numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣']
+const iDevise = navigator.platform.match(/^iP/)
 
 var Game = function (cols, rows, number_of_bombs, set, usetwemoji) {
   this.number_of_cells = cols * rows
@@ -107,6 +108,19 @@ Game.prototype.bindEvents = function () {
       target.appendChild(emoji)
       that.updateBombsLeft()
     })
+
+    // support to HOLD to mark bomb, works in Android by default
+    if (iDevise) {
+      target.addEventListener('touchstart', function (evt) {
+        that.holding = setTimeout(function () {
+          target.dispatchEvent(new Event('contextmenu'))
+        }, 500)
+      })
+
+      target.addEventListener('touchend', function (evt) {
+        clearTimeout(that.holding)
+      })
+    }
   })
 
   window.addEventListener('keydown', function (evt) {
