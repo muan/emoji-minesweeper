@@ -4,14 +4,9 @@
     <title>💥</title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="http://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet" type="text/css">
 
     <!-- 👋 this is a wip don't be mean -->
     <!-- check out https://github.com/muan/emoji-minesweeper -->
-
-    <!-- haiiii https://github.com/twitter/twemoji is awesome -->
-    <script src="twemoji.js"></script>
-    <script src="game.js"></script>
 
     <style type="text/css">
       body {
@@ -21,7 +16,7 @@
         padding: 20px 0;
       }
 
-      span, input, a, div {
+      span, input, a, div, button {
         box-sizing: border-box;
       }
 
@@ -45,29 +40,23 @@
         letter-spacing: 1px;
       }
 
-      .flex-table {
-        display: table;
+      .flex {
+        display: flex;
       }
 
-      .flex-cell,
-      .flex-cell-min {
-        display: table-cell;
-        width: 99%;
-      }
-
-      .flex-cell-min {
-        width: 1%;
-        white-space: nowrap;
+      .flex-cell {
+        flex: 1 1 auto;
       }
 
       .action-btn {
+        margin-bottom: 10px;
+        background-color: transparent;
+        width: 100%;
         display: block;
         font-size: 1.2em;
-        line-height: 1em;
         padding: 10px;
         border: 1px solid #eee;
         text-decoration: none;
-        margin: 10px 10px 0;
         border-radius: 5px;
       }
 
@@ -101,8 +90,16 @@
         background: transparent;
       }
 
+      .divider {
+        align-self: center;
+        flex: 0;
+        padding: 0 10px;
+        color: #999;
+        font-size: 0.65em;
+      }
+
       .prepend-input {
-        padding: 7px 0 6px 10px;
+        padding: 7px 8px 6px 10px;
         margin: 5px 0;
         border-right: 1px solid #e0e0e0;
         line-height: 1;
@@ -111,7 +108,7 @@
 
       .prepend-input + input {
         width: 100%;
-        padding-left: 40px;
+        padding-left: 45px;
         margin-bottom: 10px;
       }
 
@@ -135,6 +132,8 @@
         width: 25px;
         height: 25px;
         font-size: 20px;
+        background-color: transparent;
+        border: 0;
         display: inline-block;
         position: relative;
         padding: 2px 3px;
@@ -147,11 +146,11 @@
       }
 
       #map {
-        padding: 10px;
         white-space: nowrap;
       }
 
       .wrapper {
+        padding: 10px;
         position: relative;
         -webkit-user-select: none;
         user-select: none;
@@ -181,26 +180,23 @@
       }
 
       .bar {
+        margin: 10px -10px -10px;
         background-color: #f4f4f4;
-        width: 100%;
-        display: table;
       }
 
       .stat {
         width: 33.3%;
         font-size: 0.85em;
         padding: 8px 10px 5px;
-        display: table-cell;
         text-align: center;
       }
 
-      .stat:after {
+      .small-text {
         display: block;
         color: #999;
         margin-top: 5px;
         font-size: 0.7em;
         letter-spacing: 1px;
-        content: attr(title);
       }
 
       .settings {
@@ -224,10 +220,9 @@
       }
 
       .settings-popup {
+        margin-right: 10px;
         display: none;
         position: absolute;
-        padding: 10px;
-        width: 100%;
       }
 
       .settings-popup button {
@@ -235,7 +230,7 @@
         margin: 0;
       }
 
-      .settings-popup .flex-table {
+      .settings-popup .flex {
         margin-bottom: 10px;
       }
 
@@ -245,12 +240,6 @@
 
       .settings-popup.show ~ * {
         visibility: hidden;
-      }
-
-      .divider {
-        padding: 0 10px;
-        color: #999;
-        font-size: 0.65em;
       }
 
       .stat,
@@ -265,45 +254,60 @@
         color: #08c;
         text-decoration: none;
       }
+
+      .feedback {
+        font-size: 1px;
+        width: 1px;
+        height: 1;
+        overflow: hidden;
+        position: absolute;
+        left: -1px;
+        top: -1px;
+      }
     </style>
   </head>
   <body>
     <div class="wrapper">
-      <button class="settings js-settings"></button>
+      <button type="button" class="settings js-settings" aria-haspopup="true" aria-expanded="false" aria-label="Settings"></button>
       <div class="js-settings-popup settings-popup">
-        <div class="flex-table">
-          <label class="btn flex-cell-min"><input type="radio" name="emoji" id="twemoji" checked> Twemoji</label>
-          <label class="btn flex-cell-min"><input type="radio" name="emoji" id="emoji"> Native emoji</label>
+        <div class="flex">
+          <label class="btn flex-cell" aria-label="Use Twitter Emoji"><input type="radio" name="emoji" id="twemoji" checked> Twemoji</label>
+          <label class="btn flex-cell" aria-label="Use Native Emoji"><input type="radio" name="emoji" id="emoji"> Native emoji</label>
         </div>
-        <div class="flex-table">
-          <input id="cols" class="input flex-cell" type="number" value="10" min="1" max="500">
-          <div class="flex-cell-min divider">&times;</div>
-          <input id="rows" class="input flex-cell" type="number" value="10" min="1" max="500"><br>
+        <div class="flex">
+          <input id="cols" class="input flex-cell" type="number" value="10" min="1" max="500" aria-label="Columns">
+          <div class="flex-cell divider">&times;</div>
+          <input id="rows" class="input flex-cell" type="number" value="10" min="1" max="500" aria-label="Rows"><br>
         </div>
         <div class="prepend-input">💣</div>
-        <input id="bombs" class="input" type="number" value="10" min="1" max="500">
-        <select id="emojiset" class="input input-select">
+        <input id="bombs" class="input" type="number" value="10" min="1" max="2500" aria-label="Number of bombs">
+        <select id="emojiset" class="input input-select" aria-label="Change emoji set">
           <option value="🐣 💣 🚧 ◻️">🐣 💣 🚧</option>
           <option value="🍰 👾 📌 ◻️">🍰 👾 📌</option>
           <option value="🌷 ⚡️ 🐞 ◻️">🌷 ⚡️ 🐞</option>
           <option value="⭕️ ❌ ❗️ ✖️️">⭕️ ❌ ❗️ ✖️</option>
           <option value="☀ ⚡ ☔ ☁️">☀ ⚡ ☔ ☁️</option>
         </select>
-        <button class="js-popup-new-game btn">Restart Game</button>
+        <button class="js-popup-new-game btn" type="button">Save and restart game</button>
       </div>
-      <a href="#" class="action-btn js-new-game">
+      <button type="button" class="action-btn js-new-game" aria-label="New game">
         <span class="default-emoji"></span>
         <span id="result" class="result-emoji"></span>
-      </a>
-      <div id="map">
+      </button>
+      <div id="map" role="grid" aria-label="Mine field">
       </div>
-      <div class="bar flex-table">
-        <div title="BOMBS" id="bombs-left" class="stat flex-cell">0</div>
-        <div title="MOVES" id="moves" class="stat flex-cell">0</div>
-        <div title="TIME" id="timer" class="stat flex-cell">0</div>
+      <div class="bar flex">
+        <div class="stat flex-cell"><div id="bombs-left">0</div><span class="small-text">BOMBS</span></div>
+        <div class="stat flex-cell"><div id="moves"></div><span class="small-text">MOVES</span></div>
+        <div class="stat flex-cell"><div id="timer"></div><span class="small-text">TIME</span></div>
       </div>
     </div>
     <a href="https://github.com/muan/emoji-minesweeper" class="link-to-github">[Code]</a>
+    <div aria-live="assertive" class="feedback"></div>
+
+    <!-- haiiii https://github.com/twitter/twemoji is awesome -->
+    <script src="twemoji.js"></script>
+    <script src="game.js"></script>
 
     <script>
       var emojiset = document.getElementById('emojiset').value.split(' ')
@@ -319,6 +323,7 @@
       document.querySelector('.js-settings').addEventListener('click', function() {
         var list = document.querySelector('.js-settings-popup').classList
         list.contains('show') ? list.remove('show') : list.add('show')
+        this.setAttribute('aria-expanded', list.contains('show'))
       })
 
       function restart () {
@@ -338,5 +343,6 @@
       ga('create', 'UA-21332781-19', 'auto')
       ga('send', 'pageview')
     </script>
+    <link href="http://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet" type="text/css">
   </body>
 </html>

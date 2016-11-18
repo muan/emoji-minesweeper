@@ -1,6 +1,7 @@
 /* global twemoji, alert, MouseEvent, game */
 const numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣']
 const iDevise = navigator.platform.match(/^iP/)
+const feedback = document.querySelector('.feedback')
 
 var Game = function (cols, rows, number_of_bombs, set, usetwemoji) {
   this.number_of_cells = cols * rows
@@ -33,7 +34,11 @@ Game.prototype.init = function () {
     return that.cols * (y - 1 ) + x - 1
   }
 
+  var row = document.createElement('div')
+  row.setAttribute('role', 'row')
   grid_data.forEach(function (isBomb, i) {
+    var cell = document.createElement('span')
+    cell.setAttribute('role', 'gridcell')
     var mine = that.mine(isBomb)
     var x = Math.floor((i + 1) % that.cols) || that.cols
     var y = Math.ceil((i + 1) / that.cols)
@@ -45,8 +50,13 @@ Game.prototype.init = function () {
     mine.classList.add('x' + x, 'y' + y)
     mine.neighbors = neighbors_cords.map(function (xy) { return `.x${xy[0]}.y${xy[1]}` })
 
-    that.map.appendChild(mine)
-    if (x === that.cols) that.map.appendChild(document.createElement('br'))
+    cell.appendChild(mine)
+    row.appendChild(cell)
+    if (x === that.cols)  {
+      that.map.appendChild(row)
+      row = document.createElement('div')
+      row.setAttribute('role', 'row')
+    }
   })
 
   this.resetMetadata()
@@ -75,6 +85,7 @@ Game.prototype.bindEvents = function () {
       if (evt.view) that.moveIt()
 
       target.reveal()
+      that.updateFeedback(target.getAttribute('aria-label'))
 
       if (target.mine_count === 0 && !target.isBomb) {
         that.revealNeighbors(target)
@@ -98,9 +109,13 @@ Game.prototype.bindEvents = function () {
       evt.preventDefault()
       if (!target.isMasked) { return }
       if (target.isFlagged) {
+        target.setAttribute('aria-label','Field')
+        that.updateFeedback('Unflagged as potential bomb')
         emoji = that.emojiset[3].cloneNode()
         target.isFlagged = false
       } else {
+        target.setAttribute('aria-label', 'Flagged as potential bomb')
+        that.updateFeedback('Flagged as potential bomb')
         emoji = that.emojiset[2].cloneNode()
         target.isFlagged = true
       }
@@ -177,15 +192,18 @@ Game.prototype.startTimer = function () {
 
 Game.prototype.mine = function (bomb) {
   var that = this
-  var base = document.createElement('span')
+  var base = document.createElement('button')
+  base.type = 'button'
+  base.setAttribute('aria-label', 'Field')
   base.className = 'cell'
   base.appendChild(this.emojiset[3].cloneNode())
   base.isMasked = true
   if (bomb) base.isBomb = true
   base.reveal = function (won) {
-    var bombemoji = won ? that.emojiset[2] : that.emojiset[1]
-    var emoji = base.isBomb ? bombemoji : that.numbermoji[base.mine_count]
+    var emoji = base.isBomb ? (won ? that.emojiset[2] : that.emojiset[1]) : that.numbermoji[base.mine_count]
+    var text = base.isBomb ? (won ? "Bomb discovered" : "Boom!") : (base.mine_count === 0 ? "Empty field" : base.mine_count + " bombs nearby")
     this.childNodes[0].remove()
+    this.setAttribute('aria-label', text)
     this.appendChild(emoji.cloneNode())
     this.isMasked = false
     this.classList.add('unmasked')
@@ -216,6 +234,7 @@ Game.prototype.prepareEmoji = function () {
       } else {
         ele = document.createElement('img')
         ele.className = 'emoji'
+        ele.setAttribute('aria-hidden', 'true')
         ele.src = twemoji.parse(emoji).match(/src=\"(.+)\">/)[1]
       }
     } else {
@@ -262,11 +281,19 @@ Game.prototype.updateBombsLeft = function () {
   document.getElementById('bombs-left').textContent = this.number_of_bombs - flagged.length
 }
 
+Game.prototype.updateFeedback = function (text) {
+  feedback.textContent = text
+  // Toggle period to force voiceover to read out the same content
+  if (this.feedbackToggle) feedback.textContent += "."
+  this.feedbackToggle = !this.feedbackToggle
+}
+
 Game.prototype.showMessage = function () {
   clearInterval(this.timer)
   var seconds = ((new Date() - this.startTime) / 1000).toFixed(2)
   var winner = this.result === 'won'
   var emoji = winner ? '😎' : '😵'
+  this.updateFeedback(winner ? "Yay, you won!" : "Boom! you lost.")
   document.querySelector('.wrapper').classList.add(this.result)
   document.getElementById('timer').textContent = seconds
   document.getElementById('result').innerHTML = this.usetwemoji ? twemoji.parse(emoji) : emoji
