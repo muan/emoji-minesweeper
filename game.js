@@ -140,7 +140,7 @@ Game.prototype.bindEvents = function () {
 
   window.addEventListener('keydown', function (evt) {
     if (evt.key == 'r' || evt.which == 'R'.charCodeAt()) {
-      that.restart(usetwemoji)
+      that.restart(that.usetwemoji)
     }
   })
 }
@@ -229,7 +229,7 @@ Game.prototype.prepareEmoji = function () {
   function makeEmojiElement (emoji) {
     var ele
     if(that.usetwemoji) {
-      if (emoji.alt) {
+      if (emoji.src) {
         ele = emoji
       } else {
         ele = document.createElement('img')
