@@ -278,7 +278,7 @@ Game.prototype.moveIt = function (zero) {
 
 Game.prototype.updateBombsLeft = function () {
   var flagged = Array.prototype.filter.call(document.getElementsByClassName('cell'), function (target) { return target.isFlagged })
-  document.getElementById('bombs-left').textContent = this.number_of_bombs - flagged.length
+  document.getElementById('bombs-left').textContent = `${this.number_of_bombs - flagged.length}/${this.number_of_bombs}`
 }
 
 Game.prototype.updateFeedback = function (text) {
