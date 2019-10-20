@@ -1,0 +1,15 @@
+{
+  "short_name": "Minesweeper",
+  "name": "Emoji Minesweeper",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "/emoji-minesweeper/",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "scope": "/emoji-minesweeper/"
+}
