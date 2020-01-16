@@ -1,5 +1,5 @@
 # emoji-minesweeper [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
-
+### game和html的代码基本都看了，有不少地方不是特别清晰，然后在运行时候遇到了问题，就是不知道如何在vscode上面网页运行出来，只能修改代码，但不知道如何具体运行。
 ### How to play
 
 - Left click to step on a spot
